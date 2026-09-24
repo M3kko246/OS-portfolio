@@ -1,0 +1,173 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Only system tokens exist as utilities: no default palette, radii, shadows or easings. */
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
+}
+
+@theme inline {
+  /* Spacing utilities are multiples of one art pixel: p-4 = 4u. */
+  --spacing: var(--u);
+
+  --color-face: var(--face);
+  --color-face-hi: var(--face-hi);
+  --color-face-lo: var(--face-lo);
+  --color-edge: var(--edge);
+  --color-well: var(--well);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-muted-on-face: var(--text-muted-on-face);
+  --color-link: var(--link);
+  --color-title-bg: var(--title-bg);
+  --color-title-fg: var(--title-fg);
+  --color-title-idle-bg: var(--title-idle-bg);
+  --color-title-idle-fg: var(--title-idle-fg);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+  --color-focus: var(--focus);
+
+  --font-pixel: var(--ff-pixel);
+  --font-read: var(--ff-read);
+
+  /* Departure Mono only at multiples of 11 art pixels, line heights on whole art pixels. */
+  --text-ui: var(--ui-font-size);
+  --text-ui--line-height: calc(var(--u) * 14);
+  --text-ui-2: calc(var(--ui-font-size) * 2);
+  --text-ui-2--line-height: calc(var(--u) * 26);
+  --text-ui-3: calc(var(--ui-font-size) * 3);
+  --text-ui-3--line-height: calc(var(--u) * 38);
+
+  /* Reading text follows rem, not the pixel grid. */
+  --text-read: 1.0625rem;
+  --text-read--line-height: 1.55;
+  --text-read-lg: 1.375rem;
+  --text-read-lg--line-height: 1.3;
+  --text-read-xl: 1.75rem;
+  --text-read-xl--line-height: 1.2;
+}
+
+/*
+ * Pixel materials (PROMPT.md §4.7). Bevels are inset shadows with whole-unit offsets, never
+ * blurred; the first shadow listed paints on top, so the 1u edge covers the outer half of the
+ * 2u bevel bands and leaves 1u of light and shadow inside it.
+ */
+@layer components {
+  .px-shell {
+    background: var(--face);
+    box-shadow:
+      inset 0 0 0 var(--u) var(--edge),
+      inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-hi),
+      inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-lo),
+      calc(var(--u) * 3) calc(var(--u) * 3) 0 0 var(--shadow);
+  }
+
+  .px-well {
+    background: var(--well);
+    box-shadow:
+      inset var(--u) var(--u) 0 0 var(--face-lo),
+      inset calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--face-hi);
+  }
+
+  /* The one documented shape exception: buttons have 1u notched corners. */
+  .px-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--u) * 4);
+    padding: calc(var(--u) * 4) calc(var(--u) * 8);
+    border: 0;
+    background: var(--face);
+    color: var(--text);
+    font-family: var(--ff-pixel);
+    font-size: var(--ui-font-size);
+    line-height: calc(var(--u) * 14);
+    white-space: nowrap;
+    cursor: pointer;
+    clip-path: polygon(
+      var(--u) 0,
+      calc(100% - var(--u)) 0,
+      100% var(--u),
+      100% calc(100% - var(--u)),
+      calc(100% - var(--u)) 100%,
+      var(--u) 100%,
+      0 calc(100% - var(--u)),
+      0 var(--u)
+    );
+    box-shadow:
+      inset 0 0 0 var(--u) var(--edge),
+      inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-hi),
+      inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-lo);
+  }
+
+  .px-btn:active:not(:disabled) {
+    padding: calc(var(--u) * 5) calc(var(--u) * 7) calc(var(--u) * 3) calc(var(--u) * 9);
+    box-shadow:
+      inset 0 0 0 var(--u) var(--edge),
+      inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-lo),
+      inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-hi);
+  }
+
+  .px-btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .px-btn:disabled {
+    background: var(--face);
+    color: var(--c-fog);
+    box-shadow: inset 0 0 0 var(--u) var(--c-fog);
+    cursor: not-allowed;
+  }
+
+  /* Errors: on-danger text on a danger background, never brick text on a surface. */
+  .px-error {
+    display: inline-block;
+    padding: var(--u) calc(var(--u) * 4);
+    background: var(--danger);
+    color: var(--on-danger);
+  }
+}
+
+@layer base {
+  html {
+    background: var(--well);
+    color: var(--text);
+    font-family: var(--ff-read);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    margin: 0;
+  }
+
+  :focus-visible {
+    outline: var(--u) dashed var(--focus);
+    outline-offset: var(--u);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0s !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

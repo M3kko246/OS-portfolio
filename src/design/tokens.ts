@@ -62,5 +62,10 @@ ${themeDeclarations('dark', '  ')}
 ${themeDeclarations('dark', '    ')}
   }
 }
+
+/* Surfaces that are dark in every theme (boot screen, night wallpaper overlays). */
+.theme-dark {
+${themeDeclarations('dark', '  ')}
+}
 `;
 }

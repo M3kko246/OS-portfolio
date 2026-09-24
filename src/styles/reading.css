@@ -1,0 +1,263 @@
+/* Static reading pages: classic version, project pages, 404. Reading text follows rem. */
+@layer components {
+  .skip-link {
+    position: absolute;
+    inset-inline-start: calc(var(--u) * 8);
+    inset-block-start: calc(var(--u) * -40);
+    z-index: 1;
+    padding: calc(var(--u) * 4) calc(var(--u) * 8);
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .skip-link:focus {
+    inset-block-start: calc(var(--u) * 8);
+  }
+
+  .site-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(var(--u) * 8) calc(var(--u) * 16);
+    padding: calc(var(--u) * 8) max(calc(var(--u) * 16), env(safe-area-inset-left));
+    background: var(--face);
+    color: var(--text);
+    box-shadow: inset 0 calc(var(--u) * -1) 0 0 var(--edge);
+  }
+  .site-bar a {
+    color: inherit;
+  }
+  /* Hit areas: at least 24 CSS px everywhere, 44 on touch screens (PROMPT.md §2.10). */
+  .site-bar a,
+  .site-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: calc(var(--u) * 24);
+  }
+  @media (pointer: coarse) {
+    .site-bar a,
+    .site-footer a {
+      min-block-size: max(44px, calc(var(--u) * 40));
+    }
+  }
+  .site-bar-home {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--u) * 6);
+    text-decoration: none;
+  }
+  .site-bar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--u) * 4) calc(var(--u) * 12);
+  }
+  .site-bar-nav a,
+  .site-footer a {
+    text-decoration: underline;
+    text-underline-offset: calc(var(--u) * 2);
+  }
+
+  .classic,
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+    max-inline-size: 72rem;
+    margin-inline: auto;
+    padding: 2.5rem max(1rem, env(safe-area-inset-left)) 4rem;
+    font-size: var(--text-read);
+    line-height: 1.55;
+  }
+
+  :is(.classic, .page) :is(h2, h3, h4) {
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  :is(.classic, .page) h2 {
+    font-size: var(--text-read-xl);
+    margin-block-end: 1rem;
+  }
+  :is(.classic, .page) h3 {
+    font-size: var(--text-read-lg);
+    margin-block: 1.5rem 0.5rem;
+  }
+  :is(.classic, .page) h4 {
+    font-size: 1.125rem;
+  }
+  :is(.classic, .page) p,
+  :is(.classic, .page) li {
+    max-inline-size: 68ch;
+  }
+  :is(.classic, .page) :is(p, ul, ol, figure) + :is(p, ul, ol, figure) {
+    margin-block-start: 0.75rem;
+  }
+  :is(.classic, .page) ul:not([role='list']) {
+    padding-inline-start: 1.25rem;
+    list-style: square;
+  }
+  :is(.classic, .page) a:not(.px-btn) {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .availability {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--u) * 6);
+  }
+  /* The only coloured dot in the UI: it reports a real state and always sits next to its label. */
+  .availability-dot {
+    inline-size: calc(var(--u) * 7);
+    block-size: calc(var(--u) * 7);
+    flex: none;
+    background: var(--face);
+    box-shadow: inset 0 0 0 var(--u) var(--edge);
+  }
+  .availability-dot[data-available='true'] {
+    background: var(--accent);
+  }
+
+  .project-list {
+    display: grid;
+    gap: 2rem;
+  }
+  .project-card {
+    display: grid;
+    gap: 1rem 1.5rem;
+  }
+  @media (min-width: 48rem) {
+    .project-card {
+      grid-template-columns: 18rem 1fr;
+      align-items: start;
+    }
+  }
+  .project-cover,
+  .project-card img,
+  .gallery img,
+  .photo-grid img,
+  .cover img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    box-shadow: 0 0 0 var(--u) var(--edge);
+  }
+  .project-body h3 {
+    margin-block: 0;
+  }
+  .project-meta {
+    color: var(--text-muted);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--u) * 4);
+  }
+  .tags li {
+    padding: 0 calc(var(--u) * 4);
+    background: var(--face);
+    color: var(--text);
+    box-shadow: inset 0 0 0 var(--u) var(--edge);
+  }
+
+  .skills {
+    display: grid;
+    gap: 0 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .timeline p.font-pixel {
+    color: var(--text-muted);
+  }
+
+  .photo-grid,
+  .gallery {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+  figcaption {
+    margin-block-start: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+
+  .quote blockquote {
+    padding-inline-start: 1rem;
+    box-shadow: inset calc(var(--u) * 2) 0 0 0 var(--edge);
+  }
+
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: calc(var(--u) * 8);
+    padding: calc(var(--u) * 12) max(calc(var(--u) * 16), env(safe-area-inset-left));
+    background: var(--face);
+    color: var(--text);
+    box-shadow: inset 0 var(--u) 0 0 var(--edge);
+  }
+  .site-footer a {
+    color: inherit;
+  }
+
+  .facts {
+    display: grid;
+    gap: 0.25rem 1.5rem;
+    grid-template-columns: max-content 1fr;
+  }
+  .facts dt {
+    color: var(--text-muted);
+  }
+
+  .prose > * + * {
+    margin-block-start: 1rem;
+  }
+  .prose h2 {
+    margin-block: 2rem 0.5rem;
+  }
+}
+
+@media print {
+  .skip-link,
+  .site-bar nav,
+  .site-footer,
+  .px-btn {
+    display: none !important;
+  }
+  :root {
+    --well: var(--c-paper);
+    --text: var(--c-ink);
+    --text-muted: var(--c-slate);
+    --link: var(--c-ink);
+  }
+  html {
+    background: none;
+    print-color-adjust: exact;
+  }
+  .site-bar {
+    background: none;
+    box-shadow: none;
+  }
+  :is(.classic, .page) a[href^='http']::after,
+  :is(.classic, .page) a[href^='mailto']::after {
+    content: ' (' attr(href) ')';
+  }
+  .project-card,
+  .timeline li,
+  figure {
+    break-inside: avoid;
+  }
+}

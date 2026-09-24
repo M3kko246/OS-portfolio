@@ -1,0 +1,29 @@
+[
+  {
+    "id": "work-current",
+    "kind": "work",
+    "title": "Ruolo attuale [DA COMPILARE]",
+    "org": "Organizzazione [DA COMPILARE]",
+    "start": "2023-01",
+    "end": null,
+    "description": "Una o due righe su cosa fai e con quale risultato. [DA COMPILARE]"
+  },
+  {
+    "id": "work-previous",
+    "kind": "work",
+    "title": "Ruolo precedente [DA COMPILARE]",
+    "org": "Organizzazione [DA COMPILARE]",
+    "start": "2020-03",
+    "end": "2022-12",
+    "description": "Una o due righe su cosa facevi e con quale risultato. [DA COMPILARE]"
+  },
+  {
+    "id": "education-degree",
+    "kind": "education",
+    "title": "Titolo di studio [DA COMPILARE]",
+    "org": "Scuola o università [DA COMPILARE]",
+    "start": "2016-09",
+    "end": "2020-02",
+    "description": "Indirizzo, tesi o progetto finale. [DA COMPILARE]"
+  }
+]

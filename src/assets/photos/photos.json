@@ -1,0 +1,25 @@
+{
+  "albums": [
+    {
+      "id": "segnaposto",
+      "title": "Album segnaposto [DA COMPILARE]",
+      "photos": [
+        {
+          "file": "foto-1.png",
+          "alt": "Segnaposto: isola con un faro in pieno giorno, disegnata nella palette del sistema",
+          "caption": "Foto segnaposto [DA COMPILARE]"
+        },
+        {
+          "file": "foto-2.png",
+          "alt": "Segnaposto: isola con un mulino al tramonto, disegnata nella palette del sistema",
+          "caption": "Foto segnaposto [DA COMPILARE]"
+        },
+        {
+          "file": "foto-3.png",
+          "alt": "Segnaposto: isola con un osservatorio di notte, disegnata nella palette del sistema",
+          "caption": "Foto segnaposto [DA COMPILARE]"
+        }
+      ]
+    }
+  ]
+}

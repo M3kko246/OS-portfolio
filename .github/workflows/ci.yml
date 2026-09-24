@@ -31,10 +31,13 @@ jobs:
       - run: pnpm build
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+      - run: pnpm lighthouse
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: reports
+          path: |
+            playwright-report/
+            .lighthouseci/
           retention-days: 7
       - run: pnpm audit --prod --audit-level high

@@ -1,0 +1,38 @@
+---
+import Icon from '@/components/Icon.astro';
+import { profile } from '@/data/profile';
+import { t } from '@/i18n';
+import Base from '@/layouts/Base.astro';
+---
+
+<Base title={`${t('notFound.title')}, ${profile.osName}`} description={t('notFound.body')} noindex>
+  <main class="grid min-h-dvh place-items-center p-16">
+    <section class="px-shell error-window" aria-labelledby="errore">
+      <p class="bg-title-bg px-6 py-2 font-pixel text-ui text-title-fg">{t('notFound.window')}</p>
+      <div class="flex items-start gap-12 p-12">
+        <Icon name="warning-diamond" class="icon-2" />
+        <div class="flex flex-col gap-8">
+          <h1 id="errore" class="font-pixel text-ui-2">
+            {t('notFound.title')}
+          </h1>
+          <p class="text-read max-w-[46ch]">{t('notFound.body')}</p>
+        </div>
+      </div>
+      <p class="flex flex-wrap justify-end gap-8 px-12 pb-12">
+        <a class="px-btn px-btn-primary" href="/">
+          {t('action.backToDesktop')}
+        </a>
+        <a class="px-btn" href="/classica">
+          {t('nav.classic')}
+        </a>
+      </p>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .error-window {
+    max-inline-size: 40rem;
+    padding: calc(var(--u) * 3);
+  }
+</style>

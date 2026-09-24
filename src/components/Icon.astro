@@ -1,0 +1,21 @@
+---
+// Pixelarticons glyphs inlined at build time, so static pages need no script to show icons.
+const sources = import.meta.glob<string>('/node_modules/pixelarticons/svg/*.svg', {
+  query: '?raw',
+  import: 'default',
+});
+
+interface Props {
+  name: string;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const load = sources[`/node_modules/pixelarticons/svg/${name}.svg`];
+if (!load) throw new Error(`Unknown pixelarticons icon: ${name}`);
+const svg = (await load())
+  .replace('<svg', `<svg aria-hidden="true" focusable="false" class="${className ?? 'icon'}"`)
+  .replace(/\s(width|height)="24"/g, '');
+---
+
+<Fragment set:html={svg} />

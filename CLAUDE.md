@@ -21,6 +21,7 @@ file records conventions, commands and decisions so every session starts aligned
 | `pnpm build` / `pnpm preview` | Static build / serve it on port 4321                  |
 | `pnpm verify`                 | astro check, ESLint, Prettier check, Vitest, build    |
 | `pnpm test:e2e`               | Playwright + axe against `pnpm preview`               |
+| `pnpm lighthouse`             | Lighthouse with the brief's thresholds (after build)  |
 | `pnpm tokens`                 | Regenerate `src/styles/tokens.css` from `src/design`  |
 | `pnpm fonts`                  | Subset fonts from `art/fonts` into `src/assets/fonts` |
 
@@ -61,3 +62,17 @@ file records conventions, commands and decisions so every session starts aligned
   arrives.
 - pnpm 12 blocks dependency build scripts: approved ones live in `pnpm-workspace.yaml`
   (`allowBuilds`).
+- Astro 7 allows one `astro preview` per project: stop strays with `pnpm astro preview stop`.
+- Lighthouse: `scripts/lighthouse.ts` runs Lighthouse 13 over Playwright's Chromium (CDP) with the
+  thresholds of PROMPT.md §1.3. @lhci/cli was dropped: it bundles Lighthouse 12 and its Chrome
+  launcher fails to clean up on Windows.
+- Content: `testimonials.json` is validated with Zod in `src/lib/content.ts`, not a collection
+  (the file loader warns on an empty file). Photos: `photos.json` + `scripts/check-photos.ts`,
+  run before every build.
+- Placeholders: `scripts/make-placeholders.ts` draws covers and photos in the palette and writes
+  the placeholder CV. Every placeholder text contains `[DA COMPILARE]`.
+- Static pages share `src/styles/reading.css`. Surfaces that are dark in every theme (boot
+  screen) use the generated `.theme-dark` class.
+- Social images: `src/lib/og.ts` (Satori + resvg) with the static font subsets in
+  `src/assets/fonts/og`. Favicons are endpoints generated from the brand grid.
+- `SITE_URL` sets `site` (canonical URLs, sitemap, social images); defaults to example.com.

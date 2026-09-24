@@ -1,15 +1,32 @@
 // @ts-check
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, fontProviders } from 'astro/config';
 
+// The real domain is still [DA COMPILARE] (CONTENT_TODO.md): set SITE_URL when deploying.
+const site = process.env.SITE_URL ?? 'https://example.com';
+
 export default defineConfig({
-  integrations: [react()],
+  site,
+  integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
   },
   security: {
-    csp: true,
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-src 'none'",
+        "manifest-src 'self'",
+        "worker-src 'self'",
+      ],
+    },
   },
   markdown: {
     // Shiki writes inline styles, which the CSP forbids; Prism only adds classes.

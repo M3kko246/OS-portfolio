@@ -1,0 +1,49 @@
+---
+import { brandRuns } from '@/design/brand';
+
+interface Props {
+  /** Size of one grid pixel in art units (`--u`). */
+  scale?: number;
+  class?: string;
+}
+
+const { scale = 2, class: className } = Astro.props;
+const runs = brandRuns();
+---
+
+<svg
+  class:list={['brand-mark', `brand-mark-${scale}`, className]}
+  viewBox="0 0 16 16"
+  shape-rendering="crispEdges"
+  aria-hidden="true"
+  focusable="false"
+>
+  {runs.map((r) => (
+    <rect class={r.tone} x={r.x} y={r.y} width={r.width} height="1" />
+  ))}
+</svg>
+
+<style>
+  .brand-mark {
+    display: block;
+    flex: none;
+  }
+  .brand-mark-1 {
+    inline-size: calc(var(--u) * 16);
+    block-size: calc(var(--u) * 16);
+  }
+  .brand-mark-2 {
+    inline-size: calc(var(--u) * 32);
+    block-size: calc(var(--u) * 32);
+  }
+  .brand-mark-4 {
+    inline-size: calc(var(--u) * 64);
+    block-size: calc(var(--u) * 64);
+  }
+  .ink {
+    fill: currentColor;
+  }
+  .accent {
+    fill: var(--accent);
+  }
+</style>

@@ -148,3 +148,27 @@
     color-scheme: dark;
   }
 }
+
+/* Surfaces that are dark in every theme (boot screen, night wallpaper overlays). */
+.theme-dark {
+  --face: var(--c-night);
+  --face-hi: var(--c-slate);
+  --face-lo: var(--c-ink);
+  --edge: var(--c-ink);
+  --well: var(--c-ink);
+  --text: var(--c-paper);
+  --text-muted: var(--c-fog);
+  --text-muted-on-face: var(--c-paper);
+  --link: var(--c-paper);
+  --title-bg: var(--c-abyss);
+  --title-fg: var(--c-paper);
+  --title-idle-bg: var(--c-slate);
+  --title-idle-fg: var(--c-paper);
+  --accent: var(--c-sun);
+  --on-accent: var(--c-ink);
+  --danger: var(--c-brick);
+  --on-danger: var(--c-paper);
+  --focus: var(--c-sun);
+  --shadow: color-mix(in oklab, var(--c-ink) 60%, transparent);
+  color-scheme: dark;
+}

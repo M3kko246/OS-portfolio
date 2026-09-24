@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './tokens.css';
+@import './reading.css';
 
 /* Only system tokens exist as utilities: no default palette, radii, shadows or easings. */
 @theme {
@@ -94,6 +95,7 @@
     font-size: var(--ui-font-size);
     line-height: calc(var(--u) * 14);
     white-space: nowrap;
+    text-decoration: none;
     cursor: pointer;
     clip-path: polygon(
       var(--u) 0,
@@ -129,6 +131,18 @@
     color: var(--c-fog);
     box-shadow: inset 0 0 0 var(--u) var(--c-fog);
     cursor: not-allowed;
+  }
+
+  /* pixelarticons are drawn on a 12x12 grid inside a 24 viewBox: 12u keeps them crisp. */
+  .icon {
+    inline-size: calc(var(--u) * 12);
+    block-size: calc(var(--u) * 12);
+    flex: none;
+  }
+  .icon-2 {
+    inline-size: calc(var(--u) * 24);
+    block-size: calc(var(--u) * 24);
+    flex: none;
   }
 
   /* Errors: on-danger text on a danger background, never brick text on a surface. */

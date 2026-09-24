@@ -19,16 +19,20 @@ Ogni voce qui corrisponde a un segnaposto `[DA COMPILARE]` nel sito o nel codice
 
 ## Contenuti
 
-- [ ] Progetti (da 4 a 8), con i campi della sezione 3.3
+- [ ] Progetti (da 4 a 8), con i campi della sezione 3.3. Oggi ci sono 6 progetti segnaposto (`src/content/projects/progetto-*.md`) con anni, stato e isole di esempio
+- [ ] Copertine e gallerie vere dei progetti (oggi le copertine sono isole disegnate da `scripts/make-placeholders.ts`)
 - [ ] Esperienze e formazione
 - [ ] Competenze raggruppate per area
-- [ ] Album e foto, ognuna con testo alternativo
+- [ ] Album e foto, ognuna con testo alternativo (oggi c'è un album segnaposto con 3 immagini disegnate)
+- [ ] CV vero al posto di `public/cv/CV.pdf` (oggi è un PDF segnaposto)
+- [ ] Monogramma definitivo sulla griglia 16x16 (`src/design/brand.ts`): serve sapere le iniziali
+- [ ] Email vera nel profilo (oggi `nome@example.com`)
 - [ ] Testimonianze (opzionali)
 - [ ] Materiale scartato vero per il Cestino (vecchio logo, bozze)
 
 ## Pubblicazione
 
-- [ ] Dominio (serve per `site` in `astro.config.mjs`, URL canonici e sitemap)
+- [ ] Dominio: impostare `SITE_URL` sull'hosting (oggi URL canonici, sitemap e immagini social puntano a `https://example.com`)
 - [ ] Hosting: proposta Cloudflare, da confermare
 - [ ] Account Resend e chiave API (da inserire solo nelle variabili d'ambiente dell'hosting)
 - [ ] Repository GitHub remoto per far girare la CI

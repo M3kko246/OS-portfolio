@@ -1,160 +1,92 @@
 ---
-// Temporary T0 page: palette and semantic tokens in both themes. Replaced by the desktop in T2.
+// Static boot screen: the LCP element, what crawlers and no-JS visitors see, and the surface the
+// OS takes over from in T2. Name, role, CV and contact are real HTML from the first frame.
+import BrandMark from '@/components/BrandMark.astro';
+import { profile } from '@/data/profile';
+import { t } from '@/i18n';
 import Base from '@/layouts/Base.astro';
-import { palette, paletteNames } from '@/design/palette';
+import { getProjects, pageTitle, personJsonLd } from '@/lib/content';
+import { photoCount } from '@/lib/photos';
+
+const projects = await getProjects();
+const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
-<Base title="Token di sistema" description="Palette e token dell'interfaccia nei due temi.">
-  <main class="mx-auto flex max-w-[68rem] flex-col gap-24 p-16">
-    <header class="flex flex-col gap-8">
-      <h1 class="font-pixel text-ui-3">Token di sistema</h1>
-      <p class="text-read max-w-[68ch]">
-        Pagina provvisoria della tappa T0: mostra la palette e i token nei due temi. Nella tappa T2
-        lascia il posto al desktop.
-      </p>
-      <fieldset class="flex flex-wrap items-center gap-12 font-pixel text-ui">
-        <legend class="mb-4">Tema</legend>
-        <label class="flex items-center gap-4">
-          <input type="radio" name="theme" value="auto" checked /> Auto
-        </label>
-        <label class="flex items-center gap-4">
-          <input type="radio" name="theme" value="light" /> Giorno
-        </label>
-        <label class="flex items-center gap-4">
-          <input type="radio" name="theme" value="dark" /> Notte
-        </label>
-      </fieldset>
-    </header>
-
-    <section aria-labelledby="palette-title" class="flex flex-col gap-8">
-      <h2 id="palette-title" class="font-pixel text-ui-2">
-        Palette
-      </h2>
-      <ul class="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-8" role="list">
-        {paletteNames.map((name) => (
-          <li class="flex items-center gap-8 font-pixel text-ui">
-            <span class="swatch" data-color={name} aria-hidden="true" />
-            <span>
-              {name}
-              <br />
-              <span class="text-text-muted">{palette[name]}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section aria-labelledby="surfaces-title" class="flex flex-col gap-8">
-      <h2 id="surfaces-title" class="font-pixel text-ui-2">
-        Superfici
-      </h2>
-      <div class="flex flex-wrap items-start gap-24">
-        <div class="px-shell flex w-[22rem] flex-col gap-2 p-3">
-          <p class="bg-title-bg px-4 py-2 font-pixel text-ui text-title-fg">Finestra attiva</p>
-          <div class="px-well flex flex-col gap-6 p-8">
-            <p class="text-read">Testo principale nel pozzo.</p>
-            <p class="text-read text-text-muted">Testo secondario nel pozzo.</p>
-            <p class="text-read">
-              <a class="text-link underline" href="/">
-                Collegamento
-              </a>
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-6 p-4">
-            <button class="px-btn px-btn-primary" type="button">
-              Primario
-            </button>
-            <button class="px-btn" type="button">
-              Secondario
-            </button>
-            <button class="px-btn" type="button" disabled>
-              Disabilitato
-            </button>
-          </div>
-          <p class="px-4 font-pixel text-ui text-text-muted-on-face">
-            Testo secondario sulla cornice
-          </p>
-        </div>
-        <div class="px-shell flex w-[22rem] flex-col gap-2 p-3">
-          <p class="bg-title-idle-bg px-4 py-2 font-pixel text-ui text-title-idle-fg">
-            Finestra inattiva
-          </p>
-          <div class="px-well flex flex-col gap-6 p-8">
-            <p class="text-read">
-              <span class="px-error font-pixel text-ui">Esempio di messaggio di errore</span>
-            </p>
-            <p class="bg-accent px-4 font-pixel text-ui text-on-accent">Elemento selezionato</p>
-          </div>
-        </div>
+<Base
+  title={pageTitle()}
+  description={profile.bioShort}
+  type="profile"
+  jsonLd={personJsonLd(site)}
+  bodyClass="boot-body theme-dark"
+>
+  <a class="boot-classic font-pixel text-ui" href="/classica">
+    {t('nav.goClassic')}
+  </a>
+  <main class="boot">
+    <div class="boot-id">
+      <BrandMark scale={4} />
+      <div class="flex flex-col gap-4">
+        <h1 class="font-pixel text-ui-3">{profile.name}</h1>
+        <p class="font-pixel text-ui-2">{profile.role}</p>
       </div>
-    </section>
+    </div>
+    <ul class="boot-log font-pixel text-ui" role="list">
+      <li>{t('boot.projectsFound', { count: projects.length })}</li>
+      <li>{t('boot.photosFound', { count: photoCount })}</li>
+    </ul>
+    <p class="flex flex-wrap gap-8">
+      <a class="px-btn px-btn-primary" href={profile.cv.it} download>
+        {t('action.downloadCv')}
+      </a>
+      <a class="px-btn" href={`mailto:${profile.email}`}>
+        {t('action.contactMe')}
+      </a>
+    </p>
+    <noscript>
+      <p class="text-read max-w-[68ch]">{t('boot.noscript')}</p>
+    </noscript>
   </main>
 </Base>
 
-<script>
-  const root = document.documentElement;
-  for (const input of document.querySelectorAll<HTMLInputElement>('input[name="theme"]')) {
-    input.addEventListener('change', () => {
-      if (input.value === 'auto') root.removeAttribute('data-theme');
-      else root.setAttribute('data-theme', input.value);
-    });
-  }
-</script>
-
 <style>
-  /* Swatches are previews: the only place raw world colors may appear in the UI. */
-  .swatch {
-    inline-size: calc(var(--u) * 24);
-    block-size: calc(var(--u) * 24);
-    flex: none;
-    box-shadow: inset 0 0 0 var(--u) var(--edge);
-  }
-  .swatch[data-color='ink'] {
+  /* The boot screen is ink in both themes: `.theme-dark` pins the dark tokens. */
+  :global(.boot-body) {
     background: var(--c-ink);
+    color: var(--text);
   }
-  .swatch[data-color='night'] {
-    background: var(--c-night);
+  .boot {
+    display: flex;
+    min-block-size: 100dvh;
+    flex-direction: column;
+    justify-content: center;
+    gap: calc(var(--u) * 24);
+    padding: calc(var(--u) * 24) max(calc(var(--u) * 16), env(safe-area-inset-left))
+      calc(var(--u) * 48);
+    margin-inline: auto;
+    max-inline-size: 72rem;
   }
-  .swatch[data-color='slate'] {
-    background: var(--c-slate);
+  .boot-id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--u) * 16);
   }
-  .swatch[data-color='fog'] {
-    background: var(--c-fog);
+  .boot-log {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 2);
+    color: var(--c-paper);
   }
-  .swatch[data-color='chalk'] {
-    background: var(--c-chalk);
+  .boot-log li::before {
+    content: '> ';
+    color: var(--c-sun);
   }
-  .swatch[data-color='paper'] {
-    background: var(--c-paper);
-  }
-  .swatch[data-color='abyss'] {
-    background: var(--c-abyss);
-  }
-  .swatch[data-color='sea'] {
-    background: var(--c-sea);
-  }
-  .swatch[data-color='lagoon'] {
-    background: var(--c-lagoon);
-  }
-  .swatch[data-color='foam'] {
-    background: var(--c-foam);
-  }
-  .swatch[data-color='olive'] {
-    background: var(--c-olive);
-  }
-  .swatch[data-color='meadow'] {
-    background: var(--c-meadow);
-  }
-  .swatch[data-color='sand'] {
-    background: var(--c-sand);
-  }
-  .swatch[data-color='sun'] {
-    background: var(--c-sun);
-  }
-  .swatch[data-color='brick'] {
-    background: var(--c-brick);
-  }
-  .swatch[data-color='plum'] {
-    background: var(--c-plum);
+  .boot-classic {
+    position: fixed;
+    inset-block-end: max(calc(var(--u) * 16), env(safe-area-inset-bottom));
+    inset-inline-start: max(calc(var(--u) * 16), env(safe-area-inset-left));
+    color: var(--c-paper);
+    text-decoration: underline;
+    text-underline-offset: calc(var(--u) * 2);
   }
 </style>

@@ -1,0 +1,253 @@
+---
+// The whole portfolio on one semantic page: no JavaScript, printable, for people in a hurry,
+// screen readers and search engines.
+import { Picture } from 'astro:assets';
+import BrandMark from '@/components/BrandMark.astro';
+import { profile } from '@/data/profile';
+import { t } from '@/i18n';
+import Base from '@/layouts/Base.astro';
+import {
+  getExperience,
+  getProjectsNewestFirst,
+  pageTitle,
+  personJsonLd,
+  testimonials,
+} from '@/lib/content';
+import { formatPeriod } from '@/lib/format';
+import { albums } from '@/lib/photos';
+
+const projects = await getProjectsNewestFirst();
+const experience = await getExperience();
+const paths = [
+  { title: t('path.work'), items: experience.filter((e) => e.data.kind === 'work') },
+  { title: t('path.education'), items: experience.filter((e) => e.data.kind === 'education') },
+].filter((group) => group.items.length > 0);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const sections = [
+  ['chi-sono', t('section.about')],
+  ['progetti', t('section.projects')],
+  ['competenze', t('section.skills')],
+  ['percorso', t('section.path')],
+  ['foto', t('section.photos')],
+  ['contatti', t('section.contact')],
+] as const;
+---
+
+<Base
+  title={pageTitle(t('nav.classic'))}
+  description={t('meta.classicDescription')}
+  type="profile"
+  jsonLd={personJsonLd(site)}
+>
+  <a class="skip-link font-pixel text-ui" href="#contenuto">
+    {t('nav.skipToContent')}
+  </a>
+  <header class="site-bar">
+    <a class="site-bar-home font-pixel text-ui" href="/">
+      <BrandMark scale={1} />
+      {t('nav.openOs', { os: profile.osName })}
+    </a>
+    <nav aria-label={t('nav.sections')}>
+      <ul class="site-bar-nav font-pixel text-ui" role="list">
+        {sections.map(([id, label]) => (
+          <li>
+            <a href={`#${id}`}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </header>
+
+  <main id="contenuto" class="classic">
+    <section class="hero" aria-labelledby="nome">
+      <h1 id="nome" class="text-read-xl font-bold">
+        {profile.name}
+      </h1>
+      <p class="text-read-lg">{profile.role}</p>
+      <p class="text-read">{profile.bioShort}</p>
+      <p class="availability font-pixel text-ui">
+        <span
+          class="availability-dot"
+          data-available={String(profile.availability.available)}
+        ></span>
+        <span class="sr-only">{t('availability.title')}:</span>
+        {profile.availability.label}
+      </p>
+      <p class="flex flex-wrap gap-8">
+        <a class="px-btn px-btn-primary" href={profile.cv.it} download>
+          {t('action.downloadCv')}
+        </a>
+        <a class="px-btn" href={`mailto:${profile.email}`}>
+          {t('action.contactMe')}
+        </a>
+      </p>
+    </section>
+
+    <section id="chi-sono" aria-labelledby="chi-sono-title">
+      <h2 id="chi-sono-title">{t('section.about')}</h2>
+      <p>{profile.bioLong}</p>
+      <h3>{t('section.languages')}</h3>
+      <ul>
+        {profile.languages.map((l) => (
+          <li>
+            {l.name}: {l.level}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="progetti" aria-labelledby="progetti-title">
+      <h2 id="progetti-title">{t('section.projects')}</h2>
+      <ul class="project-list" role="list">
+        {projects.map((project) => (
+          <li>
+            <article class="project-card" aria-labelledby={`p-${project.id}`}>
+              <Picture
+                src={project.data.cover}
+                alt={project.data.coverAlt}
+                formats={['avif', 'webp']}
+                widths={[400, 800]}
+                sizes="(min-width: 48rem) 18rem, 100vw"
+                class="project-cover"
+              />
+              <div class="project-body">
+                <h3 id={`p-${project.id}`}>
+                  <a href={`/progetti/${project.id}`}>{project.data.title}</a>
+                </h3>
+                <p class="project-meta font-pixel text-ui">
+                  {project.data.year} · {project.data.role}
+                </p>
+                <p>{project.data.tagline}</p>
+                <p>{project.data.summary}</p>
+                <ul class="tags font-pixel text-ui" role="list" aria-label={t('project.stack')}>
+                  {project.data.stack.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+                {project.data.outcomes.length > 0 && (
+                  <ul class="outcomes">
+                    {project.data.outcomes.map((o) => (
+                      <li>
+                        <strong>{o.value}</strong> {o.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="competenze" aria-labelledby="competenze-title">
+      <h2 id="competenze-title">{t('section.skills')}</h2>
+      <div class="skills">
+        {profile.skills.map((group) => (
+          <div>
+            <h3>{group.area}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="percorso" aria-labelledby="percorso-title">
+      <h2 id="percorso-title">{t('section.path')}</h2>
+      {paths.map((group) => (
+        <>
+          <h3>{group.title}</h3>
+          <ol class="timeline" role="list">
+            {group.items.map((entry) => (
+              <li>
+                <h4>{entry.data.title}</h4>
+                <p class="font-pixel text-ui">
+                  {entry.data.org} · {formatPeriod(entry.data.start, entry.data.end)}
+                </p>
+                <p>{entry.data.description}</p>
+              </li>
+            ))}
+          </ol>
+        </>
+      ))}
+    </section>
+
+    <section id="foto" aria-labelledby="foto-title">
+      <h2 id="foto-title">{t('section.photos')}</h2>
+      {albums.map((album) => (
+        <>
+          <h3>{album.title}</h3>
+          <ul class="photo-grid" role="list">
+            {album.photos.map((photo) => (
+              <li>
+                <figure>
+                  <Picture
+                    src={photo.image}
+                    alt={photo.alt}
+                    formats={['avif', 'webp']}
+                    widths={[320, 640]}
+                    sizes="(min-width: 48rem) 14rem, 50vw"
+                  />
+                  {photo.caption && <figcaption>{photo.caption}</figcaption>}
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </section>
+
+    {testimonials.length > 0 && (
+      <section id="testimonianze" aria-labelledby="testimonianze-title">
+        <h2 id="testimonianze-title">{t('section.testimonials')}</h2>
+        {testimonials.map((item) => (
+          <figure class="quote">
+            <blockquote>
+              <p>{item.quote}</p>
+            </blockquote>
+            <figcaption>
+              {item.name}, {item.role}, {item.company}
+            </figcaption>
+          </figure>
+        ))}
+      </section>
+    )}
+
+    <section id="contatti" aria-labelledby="contatti-title">
+      <h2 id="contatti-title">{t('section.contact')}</h2>
+      <p>
+        {t('contact.email')}: <a href={`mailto:${profile.email}`}>{profile.email}</a>
+      </p>
+      {profile.socials.length > 0 && (
+        <>
+          <h3>{t('contact.elsewhere')}</h3>
+          <ul>
+            {profile.socials.map((s) => (
+              <li>
+                <a href={s.url} rel="me noopener noreferrer">
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p>
+        <a href={profile.cv.it} download>
+          {t('action.downloadCv')}
+        </a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer font-pixel text-ui">
+    <a href="/">{t('nav.openOs', { os: profile.osName })}</a>
+    <p>
+      © {new Date().getFullYear()} {profile.name}
+    </p>
+  </footer>
+</Base>

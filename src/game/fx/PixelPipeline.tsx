@@ -14,9 +14,15 @@ import { PaletteQuantizePass } from './PaletteQuantizePass';
 export function PixelPipeline({
   dither,
   onPixelSize,
+  pixelSize: fixedPixelSize,
+  quantize: withPalette = true,
 }: {
   dither: boolean;
-  onPixelSize: (pixelSize: number, gameRows: number) => void;
+  onPixelSize?: (pixelSize: number, gameRows: number) => void;
+  /** Game pixel size in device pixels; by default about 270 rows at any resolution. */
+  pixelSize?: number;
+  /** Off only to render the wallpaper draft kept in the Cestino. */
+  quantize?: boolean;
 }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
@@ -33,18 +39,18 @@ export function PixelPipeline({
     const quantize = new PaletteQuantizePass(2, false);
     composer.addPass(pixelated);
     composer.addPass(new OutputPass());
-    composer.addPass(quantize);
+    if (withPalette) composer.addPass(quantize);
     return { composer, pixelated, quantize };
-  }, [gl, scene, camera]);
+  }, [gl, scene, camera, withPalette]);
 
   useEffect(() => {
-    const pixelSize = pixelSizeFor(size.height * dpr);
+    const pixelSize = fixedPixelSize ?? pixelSizeFor(size.height * dpr);
     composer.setPixelRatio(dpr);
     composer.setSize(size.width, size.height);
     pixelated.setPixelSize(pixelSize);
     quantize.setPixelSize(pixelSize);
-    onPixelSize(pixelSize, Math.floor((size.height * dpr) / pixelSize));
-  }, [composer, pixelated, quantize, size, dpr, onPixelSize]);
+    onPixelSize?.(pixelSize, Math.floor((size.height * dpr) / pixelSize));
+  }, [composer, pixelated, quantize, size, dpr, onPixelSize, fixedPixelSize]);
 
   useEffect(() => {
     quantize.setDither(dither);

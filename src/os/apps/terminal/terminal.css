@@ -1,0 +1,103 @@
+/* Terminal: a sunken well with its own colour set. Themes are cosmetics from achievements. */
+.app-terminal {
+  --term-bg: var(--c-ink);
+  --term-text: var(--c-chalk);
+  --term-prompt: var(--c-sun);
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+  font-size: var(--ui-font-size);
+  line-height: calc(var(--u) * 14);
+}
+.terminal-amber {
+  --term-text: var(--c-sun);
+  --term-prompt: var(--c-paper);
+}
+.terminal-paper {
+  --term-bg: var(--c-paper);
+  --term-text: var(--c-ink);
+  --term-prompt: var(--c-ink);
+}
+
+.terminal-screen {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(var(--u) * 4);
+  min-block-size: 0;
+  padding: calc(var(--u) * 6);
+  background: var(--term-bg);
+  color: var(--term-text);
+  /* Sunken well: the inverted relief of the window frame. */
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-lo),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-hi);
+}
+
+.terminal-output {
+  flex: 1;
+  min-block-size: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.terminal-line {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.terminal-line.is-pre {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+/* Errors follow the system rule: on-danger text on a danger background. */
+.terminal-line.is-error > * {
+  background: var(--danger);
+  color: var(--on-danger);
+}
+
+.terminal-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: calc(var(--u) * 2);
+  cursor: pointer;
+}
+.terminal-link:hover {
+  background: var(--term-text);
+  color: var(--term-bg);
+  text-decoration: none;
+}
+.terminal-link:focus-visible {
+  outline: var(--u) dashed var(--term-text);
+  outline-offset: var(--u);
+}
+
+.terminal-form {
+  display: flex;
+  gap: calc(var(--u) * 4);
+  align-items: baseline;
+}
+.terminal-form:focus-within {
+  outline: var(--u) dashed var(--term-prompt);
+  outline-offset: calc(var(--u) * 2);
+}
+.terminal-prompt {
+  flex: none;
+  color: var(--term-prompt);
+  white-space: nowrap;
+}
+.terminal-input {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--term-text);
+  font: inherit;
+  caret-color: var(--term-prompt);
+  outline: none;
+}

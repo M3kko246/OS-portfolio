@@ -29,6 +29,7 @@ Ogni progetto è un file in `src/content/projects/`. Il nome del file diventa l'
    - `order`: posizione nella rotta del gioco, 1 per il progetto più vecchio;
    - `featured: true` per metterlo in evidenza, `draft: true` per nasconderlo online.
 4. Sotto la seconda riga `---` scrivi il caso studio completo in Markdown, usando titoli `##`. Le immagini mettile nel campo `gallery`, non dentro il testo: il Lettore del sistema mostra il testo, la galleria la mostrano la scheda progetto e l'app Foto.
+5. Se hai aggiunto o tolto un progetto, o cambiato `order` o `island`, rigenera gli sfondi del desktop con `pnpm wallpapers`: mostrano le stesse isole del gioco. Finché non lo fai, la build si ferma con un messaggio che lo ricorda.
 
 ## Esperienze e formazione
 
@@ -49,6 +50,10 @@ File: `src/content/testimonials.json`. È un elenco, vuoto per ora. Ogni voce ha
 ## CV
 
 Sostituisci `public/cv/CV.pdf` con il tuo CV. Per aggiungere la versione inglese, metti `public/cv/CV-en.pdf` e compila `cv.en` nel profilo.
+
+## Cestino
+
+Il Cestino mostra materiale scartato vero. I file sono elencati in `src/data/trash.ts`: per ognuno servono nome, tipo (`image` o `text`) e una nota. Le immagini vanno in `src/assets/trash/`, con un testo alternativo. Oggi contiene una bozza del marchio segnaposto (da sostituire con un tuo vecchio logo), il primo render dello sfondo senza palette e un elenco di idee scartate durante la costruzione del sito.
 
 ## Regole di scrittura
 

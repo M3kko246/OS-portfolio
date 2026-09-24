@@ -1,0 +1,24 @@
+---
+/**
+ * Dev-only route /dev/wallpaper (injected in astro.config.mjs only for `astro dev`): renders
+ * the desktop wallpapers from the game world for scripts/render-wallpapers.ts.
+ * Drafts are left out, as in production, so the wallpaper shows the published archipelago.
+ */
+import { getCollection } from 'astro:content';
+import WallpaperStudio from '@/game/wallpaper/WallpaperStudio';
+import { layoutInput } from '@/lib/content';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).map(layoutInput);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Wallpaper studio</title>
+  </head>
+  <body style="margin: 0">
+    <WallpaperStudio client:only="react" projects={projects} />
+  </body>
+</html>

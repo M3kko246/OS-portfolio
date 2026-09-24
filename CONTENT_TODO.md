@@ -28,7 +28,8 @@ Ogni voce qui corrisponde a un segnaposto `[DA COMPILARE]` nel sito o nel codice
 - [ ] Monogramma definitivo sulla griglia 16x16 (`src/design/brand.ts`): serve sapere le iniziali
 - [ ] Email vera nel profilo (oggi `nome@example.com`)
 - [ ] Testimonianze (opzionali)
-- [ ] Materiale scartato vero per il Cestino (vecchio logo, bozze)
+- [ ] Materiale scartato vero per il Cestino: una vecchia versione del tuo logo al posto di `logo_v1_definitivo.png` (oggi è una bozza del marchio segnaposto, `src/data/trash.ts`)
+- [ ] Dopo aver messo i progetti veri: `pnpm wallpapers` per ridisegnare gli sfondi con le isole giuste
 
 ## Pubblicazione
 

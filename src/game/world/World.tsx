@@ -74,7 +74,7 @@ function Pieces({ pieces, kit, lamps }: { pieces: Piece[]; kit: MaterialKit; lam
   );
 }
 
-function Windmill({ kit }: { kit: MaterialKit }) {
+function Windmill({ kit, still }: { kit: MaterialKit; still: boolean }) {
   const bladesRef = useRef<Group>(null);
   const geometry = useMemo(() => windmillBlades(), []);
   useEffect(
@@ -84,7 +84,7 @@ function Windmill({ kit }: { kit: MaterialKit }) {
     [geometry],
   );
   useFrame((_, delta) => {
-    if (bladesRef.current) bladesRef.current.rotation.z += delta * 0.9;
+    if (bladesRef.current && !still) bladesRef.current.rotation.z += delta * 0.9;
   });
   return (
     <group ref={bladesRef} position={[0, 2.9, 0.72]}>
@@ -150,11 +150,14 @@ function Island({
   project,
   kit,
   lamps,
+  still,
 }: {
   island: IslandSpec;
   project: ProjectSummary | undefined;
   kit: MaterialKit;
   lamps: boolean;
+  /** Reduced motion: the windmill stands still, like the water. */
+  still: boolean;
 }) {
   const ground = useMemo(() => mergeByColor(islandPieces(island)), [island]);
   const structure = useMemo(() => {
@@ -179,7 +182,7 @@ function Island({
         position={[island.front.x * landmarkAt, 0, island.front.z * landmarkAt]}
       >
         <Pieces pieces={structure} kit={kit} lamps={lamps} />
-        {island.landmark === 'windmill' && <Windmill kit={kit} />}
+        {island.landmark === 'windmill' && <Windmill kit={kit} still={still} />}
       </group>
       {island.kind === 'project' && (
         <group
@@ -284,6 +287,7 @@ export function World({
   time,
   reducedMotion,
   shadows,
+  lamps: lampsOverride,
 }: {
   layout: WorldLayout;
   projects: ProjectSummary[];
@@ -291,8 +295,11 @@ export function World({
   time: TimeOfDay;
   reducedMotion: boolean;
   shadows: boolean;
+  /** The night wallpaper keeps windows dark: its lights mark the islands already visited. */
+  lamps?: boolean;
 }) {
   const light = LIGHTING[time];
+  const lamps = lampsOverride ?? light.lamps;
   const bySlug = useMemo(() => new Map(projects.map((p) => [p.slug, p])), [projects]);
 
   const shallows = useMemo(() => {
@@ -391,7 +398,8 @@ export function World({
           island={island}
           project={island.slug ? bySlug.get(island.slug) : undefined}
           kit={kit}
-          lamps={light.lamps}
+          lamps={lamps}
+          still={reducedMotion}
         />
       ))}
       <Instances geometry={treeGeometry.trunk} color="olive" matrices={matrices.trees} kit={kit} />

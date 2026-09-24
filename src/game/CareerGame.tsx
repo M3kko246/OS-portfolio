@@ -18,6 +18,7 @@ import { useOsIndex } from '@/os/context';
 import { openApp, openExternal } from '@/os/kernel/launcher';
 import { useSession } from '@/os/kernel/session';
 import { useSettings } from '@/os/kernel/settings';
+import { useShell } from '@/os/kernel/shell';
 import { useT, type Translate } from '@/os/lib/i18n';
 import { useReducedMotion } from '@/os/lib/motion';
 import type { OsIndex } from '@/os/types';
@@ -112,6 +113,7 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
   const quality = useSettings((s) => s.quality);
   const dithering = useSettings((s) => s.dithering);
   const visited = useSession((s) => s.visitedIslands);
+  const shutdown = useShell((s) => s.shutdown);
   const hidden = useSyncExternalStore(
     subscribeVisibility,
     () => document.hidden,
@@ -316,7 +318,7 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
         // Hard shadow edges: they belong in pixel art (and PCF soft shadows are gone in three).
         shadows={effective === 'high' ? 'basic' : false}
         gl={{ antialias: false, powerPreference: 'high-performance' }}
-        frameloop={minimized || hidden || paused ? 'never' : 'always'}
+        frameloop={minimized || hidden || paused || shutdown ? 'never' : 'always'}
         camera={{ near: 1, far: 250, position: [0, 50, 50], zoom: 20 }}
         onCreated={(state) => {
           threeRef.current = state;

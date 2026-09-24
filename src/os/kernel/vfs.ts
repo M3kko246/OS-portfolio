@@ -19,6 +19,8 @@ export interface FolderNode extends BaseNode {
 
 export interface FileNode extends BaseNode {
   kind: 'file' | 'shortcut';
+  /** What `cat` prints. Files without text are binary (CV.pdf). */
+  text?: string;
 }
 
 export type VNode = FolderNode | FileNode;
@@ -39,6 +41,7 @@ export function buildVfs(index: OsIndex): FolderNode {
           name: 'Leggimi.md',
           icon: 'readme',
           action: open('reader', { slug: p.slug }),
+          text: `# ${p.title}\n${p.tagline}\n\n${p.summary}`,
         },
       ];
       if (p.demo.kind !== 'none') {
@@ -47,6 +50,7 @@ export function buildVfs(index: OsIndex): FolderNode {
           name: 'demo.lnk',
           icon: 'shortcut',
           action: open('demo', { slug: p.slug }),
+          text: p.demo.url,
         });
       }
       if (p.gallery.length > 0) {
@@ -64,6 +68,7 @@ export function buildVfs(index: OsIndex): FolderNode {
           name: 'codice.url',
           icon: 'link',
           action: { href: p.links.repo },
+          text: `[InternetShortcut]\nURL=${p.links.repo}`,
         });
       }
       return {
@@ -88,7 +93,13 @@ export function buildVfs(index: OsIndex): FolderNode {
     name: '~',
     icon: 'folder',
     children: [
-      { kind: 'file', name: 'Leggimi.txt', icon: 'readme', action: open('welcome') },
+      {
+        kind: 'file',
+        name: 'Leggimi.txt',
+        icon: 'readme',
+        action: open('welcome'),
+        text: `# ${index.profile.name}\n${index.profile.role}\n\n${index.profile.bioShort}`,
+      },
       { kind: 'file', name: 'CV.pdf', icon: 'pdf', action: open('cv') },
       {
         kind: 'folder',
@@ -102,32 +113,57 @@ export function buildVfs(index: OsIndex): FolderNode {
   };
 }
 
-/** Resolves `path` from `cwd` (both as segment lists below `~`). Returns null if missing. */
+/**
+ * Resolves `path` from `cwd` (both as segment lists below `~`). Names match without regard to
+ * case, like a forgiving shell; the result uses the real names. Returns null if missing.
+ */
 export function resolvePath(
   root: FolderNode,
   cwd: readonly string[],
   path: string,
 ): string[] | null {
-  const segments = path.startsWith('~') ? [] : [...cwd];
-  for (const part of path.replace(/^~\/?/, '').split('/')) {
+  const absolute = path.startsWith('~') || path.startsWith('/');
+  const wanted = absolute ? [] : [...cwd];
+  for (const part of path.replace(/^~?\/?/, '').split('/')) {
     if (part === '' || part === '.') continue;
-    if (part === '..') segments.pop();
-    else segments.push(part);
+    if (part === '..') wanted.pop();
+    else wanted.push(part);
   }
-  return nodeAt(root, segments) ? segments : null;
+  const segments: string[] = [];
+  let node: VNode = root;
+  for (const name of wanted) {
+    if (node.kind !== 'folder') return null;
+    const next = childNamed(node, name);
+    if (!next) return null;
+    segments.push(next.name);
+    node = next;
+  }
+  return segments;
+}
+
+export function childNamed(folder: FolderNode, name: string): VNode | undefined {
+  const lower = name.toLowerCase();
+  return (
+    folder.children.find((c) => c.name === name) ??
+    folder.children.find((c) => c.name.toLowerCase() === lower)
+  );
 }
 
 export function nodeAt(root: FolderNode, segments: readonly string[]): VNode | null {
   let node: VNode = root;
   for (const name of segments) {
     if (node.kind !== 'folder') return null;
-    const next: VNode | undefined = node.children.find((c) => c.name === name);
+    const next = childNamed(node, name);
     if (!next) return null;
     node = next;
   }
   return node;
 }
 
+/** `~/progetti/nome` for a list of segments. */
+export function pathString(segments: readonly string[]): string {
+  return ['~', ...segments].join('/');
+}
 /** Every node with its path, for search. */
 export function walk(root: FolderNode): { path: string; node: VNode }[] {
   const out: { path: string; node: VNode }[] = [];

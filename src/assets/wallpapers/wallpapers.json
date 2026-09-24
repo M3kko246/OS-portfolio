@@ -1,0 +1,19 @@
+{
+  "key": "f6ea2d8e",
+  "width": 480,
+  "height": 270,
+  "sea": {
+    "dawn": "#0f3857",
+    "day": "#1d6fa3",
+    "dusk": "#1c1b29",
+    "night": "#1c1b29"
+  },
+  "lights": {
+    "progetto-1": [123, 76],
+    "progetto-2": [136, 119],
+    "progetto-3": [211, 123],
+    "progetto-4": [255, 159],
+    "progetto-5": [333, 161],
+    "progetto-6": [357, 203]
+  }
+}

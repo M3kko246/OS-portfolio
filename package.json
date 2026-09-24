@@ -23,6 +23,7 @@
     "tokens": "tsx scripts/build-tokens.ts",
     "fonts": "tsx scripts/subset-fonts.ts",
     "sprites": "tsx scripts/build-sprites.ts",
+    "wallpapers": "tsx scripts/render-wallpapers.ts",
     "verify": "pnpm check && pnpm lint && pnpm format:check && pnpm test && pnpm build"
   },
   "dependencies": {
@@ -37,7 +38,8 @@
     "react-dom": "19.3.0",
     "resend": "6.28.1",
     "three": "0.186.0",
-    "zustand": "5.0.15"
+    "zustand": "5.0.15",
+    "zzfx": "1.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

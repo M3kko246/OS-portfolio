@@ -221,6 +221,75 @@ const CURSOR = [
     .toFile(new URL('cursor.png', outDir).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 }
 
+/** Small images drawn as character grids: one character per pixel, space is transparent. */
+async function writeGrid(
+  file: URL,
+  rows: readonly string[],
+  colors: Record<string, PaletteName>,
+): Promise<void> {
+  const w = Math.max(...rows.map((r) => r.length));
+  const h = rows.length;
+  const rgba = Buffer.alloc(w * h * 4);
+  rows.forEach((row, y) => {
+    Array.from(row).forEach((ch, x) => {
+      const name = colors[ch];
+      if (!name) return;
+      const [r, g, b] = hexToRgb(palette[name]);
+      rgba.set([r * 255, g * 255, b * 255, 255].map(Math.round), (y * w + x) * 4);
+    });
+  });
+  await mkdir(new URL('.', file), { recursive: true });
+  await writeFile(
+    file,
+    await sharp(rgba, { raw: { width: w, height: h, channels: 4 } })
+      .png({ compressionLevel: 9 })
+      .toBuffer(),
+  );
+}
+
+// Night light over visited islands on the desktop wallpaper (src/os/shell/Wallpaper.tsx).
+await writeGrid(
+  new URL('../src/assets/wallpapers/light.png', import.meta.url),
+  ['  s  ', ' sys ', 'syPys', ' sys ', '  s  '],
+  { s: 'sun', y: 'sand', P: 'paper' },
+);
+
+// The first square draft of the mark, discarded for the round beacon: kept in the Cestino.
+const DRAFT_MARK = [
+  '................',
+  '.##############.',
+  '.#............#.',
+  '.#............#.',
+  '.#..########..#.',
+  '.#..#......#..#.',
+  '.#..#.++++.#..#.',
+  '.#..#.++++.#..#.',
+  '.#..#.++++.#..#.',
+  '.#..#.++++.#..#.',
+  '.#..#......#..#.',
+  '.#..########..#.',
+  '.#............#.',
+  '.#............#.',
+  '.##############.',
+  '................',
+];
+await writeGrid(new URL('../src/assets/trash/logo-bozza.png', import.meta.url), DRAFT_MARK, {
+  '.': 'chalk',
+  '#': 'ink',
+  '+': 'sun',
+});
+
+// "Bozze" wallpaper (reward of the Archeologo achievement): the draft mark as a quiet tile.
+await writeGrid(
+  new URL('../src/assets/wallpapers/drafts-tile.png', import.meta.url),
+  [
+    ...Array.from({ length: 8 }, () => ' '.repeat(32)),
+    ...DRAFT_MARK.map((row) => `${' '.repeat(8)}${row}${' '.repeat(8)}`),
+    ...Array.from({ length: 8 }, () => ' '.repeat(32)),
+  ].map((row) => row.replaceAll(' ', '.')),
+  { '.': 'night', '#': 'slate', '+': 'slate' },
+);
+
 const rendered: [string, Buffer][] = [];
 for (const [name, draw] of Object.entries(sprites)) {
   const png = await sharp(draw().rgba(), { raw: { width: S, height: S, channels: 4 } })

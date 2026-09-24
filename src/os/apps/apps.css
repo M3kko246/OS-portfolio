@@ -262,3 +262,38 @@
     min-block-size: 44px;
   }
 }
+.choice:has(input:disabled) {
+  color: var(--text-muted-on-face);
+}
+.choice-hint {
+  color: var(--text-muted-on-face);
+}
+.settings-range {
+  inline-size: 100%;
+  max-inline-size: calc(var(--u) * 200);
+  accent-color: var(--accent);
+}
+.settings-heading {
+  inline-size: 100%;
+  margin: 0 0 calc(var(--u) * 4);
+  font-size: var(--ui-font-size);
+  line-height: calc(var(--u) * 14);
+}
+.achievements {
+  display: grid;
+  gap: calc(var(--u) * 8);
+  inline-size: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.achievement p {
+  margin: 0;
+}
+.achievement strong {
+  font-weight: normal;
+}
+.achievement.is-done strong {
+  background: var(--accent);
+  color: var(--on-accent);
+}

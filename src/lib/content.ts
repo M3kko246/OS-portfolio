@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { z } from 'astro/zod';
 import testimonialsJson from '@/content/testimonials.json';
 import { profile } from '@/data/profile';
+import type { ProjectInput } from '@/game/logic/layout';
 
 export type Project = CollectionEntry<'projects'>;
 export type Experience = CollectionEntry<'experience'>;
@@ -13,6 +14,16 @@ export async function getProjects(): Promise<Project[]> {
     ({ data }) => !(import.meta.env.PROD && data.draft),
   );
   return projects.sort((a, b) => a.data.order - b.data.order);
+}
+
+/** What the archipelago of Carriera (and the wallpapers drawn from it) needs from a project. */
+export function layoutInput({ id, data }: Project): ProjectInput {
+  const { biome, landmark, seed } = data.island;
+  return {
+    slug: id,
+    order: data.order,
+    island: { biome, landmark, ...(seed === undefined ? {} : { seed }) },
+  };
 }
 
 /** Newest first, for lists that read as a portfolio rather than as a route. */

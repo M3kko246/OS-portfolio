@@ -1,5 +1,6 @@
 import '@/styles/os.css';
 import { useCallback, useEffect } from 'react';
+import { watchAchievements } from './kernel/achievements';
 import { setLauncherIndex, openApp } from './kernel/launcher';
 import { sessionStore } from './kernel/session';
 import { settingsStore, useSettings } from './kernel/settings';
@@ -10,6 +11,7 @@ import { OsIndexContext } from './context';
 import { registerAnnouncer } from './lib/announce';
 import { useT } from './lib/i18n';
 import { useReducedMotion } from './lib/motion';
+import { playSound } from './lib/sound';
 import { getUnit, onUnitChange, refreshPixelScale, startPixelScale } from './lib/pixel-scale';
 import { Boot } from './shell/Boot';
 import { Desktop } from './shell/Desktop';
@@ -18,6 +20,7 @@ import { registerZoomLayer } from './shell/layers';
 import { DesktopMenu, StartMenu } from './shell/Menus';
 import { RunDialog } from './shell/RunDialog';
 import { Taskbar } from './shell/Taskbar';
+import { Toasts } from './shell/Toasts';
 import { WindowLayer } from './shell/WindowLayer';
 import type { OsIndex } from './types';
 
@@ -54,6 +57,7 @@ function useSystemEffects() {
   useEffect(() => {
     const update = () => {
       const bar = document.querySelector('.taskbar')?.getBoundingClientRect().height ?? 0;
+      document.documentElement.style.setProperty('--taskbar-h', `${String(bar)}px`);
       const u = getUnit();
       windowStore.getState().setArea({
         w: Math.floor(window.innerWidth / u),
@@ -112,6 +116,8 @@ export default function OS({ data }: { data: OsIndex }) {
   const t = useT();
   const startOpen = useShell((s) => s.startOpen);
   const crt = useSettings((s) => s.crt);
+  const booted = useShell((s) => s.booted);
+  const shutdown = useShell((s) => s.shutdown);
 
   useEffect(() => {
     setLauncherIndex(data);
@@ -120,8 +126,15 @@ export default function OS({ data }: { data: OsIndex }) {
 
   useSystemEffects();
 
+  // Achievements that follow from the visit itself start once the boot screen is gone.
+  useEffect(() => {
+    if (!booted) return;
+    return watchAchievements(data.projects.map((p) => p.slug));
+  }, [booted, data]);
+
   const onBooted = useCallback(() => {
     shellStore.getState().setBooted();
+    playSound('boot');
     const intent = parseSearch(window.location.search, new Set(data.projects.map((p) => p.slug)));
     if (intent) openApp(intent.appId, intent.params);
     else if (sessionStore.getState().showWelcome) openApp('welcome');
@@ -131,16 +144,20 @@ export default function OS({ data }: { data: OsIndex }) {
   return (
     <OsIndexContext value={data}>
       <div className="os">
-        <a className="skip-link font-pixel text-ui" href="/classica">
-          {t('nav.goClassic')}
-        </a>
-        <Desktop />
-        <WindowLayer />
-        <Taskbar />
-        {startOpen && <StartMenu />}
-        <DesktopMenu />
-        <RunDialog />
-        <AboutDialog />
+        {/* Switched off, the whole session is inert: only the way back can take focus. */}
+        <div className="os-session" inert={shutdown}>
+          <a className="skip-link font-pixel text-ui" href="/classica">
+            {t('nav.goClassic')}
+          </a>
+          <Desktop />
+          <WindowLayer />
+          <Taskbar />
+          {startOpen && <StartMenu />}
+          <DesktopMenu />
+          <RunDialog />
+          <AboutDialog />
+          <Toasts />
+        </div>
         <Shutdown />
         <div ref={registerZoomLayer} className="zoom-layer" aria-hidden="true" />
         {crt && <div className="crt" aria-hidden="true" />}

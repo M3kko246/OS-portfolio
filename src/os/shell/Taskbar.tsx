@@ -8,6 +8,7 @@ import { settingsStore, useSettings } from '@/os/kernel/settings';
 import { shellStore, useShell } from '@/os/kernel/shell';
 import { useWindows, windowStore } from '@/os/kernel/windows';
 import { useT } from '@/os/lib/i18n';
+import { playSound } from '@/os/lib/sound';
 import { BrandMark, cx, Glyph } from '@/os/ui/primitives';
 
 function Clock() {
@@ -105,6 +106,8 @@ export function Taskbar() {
           aria-label={sound ? t('tray.soundOn') : t('tray.soundOff')}
           onClick={() => {
             settingsStore.getState().set('sound', !sound);
+            // Turning sounds on answers with one, so the visitor hears the volume.
+            playSound('click');
           }}
         >
           <Glyph icon={sound ? Volume2 : VolumeX} />

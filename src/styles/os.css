@@ -30,6 +30,10 @@
   z-index: var(--z-menu);
 }
 
+.os-session {
+  display: contents;
+}
+
 /* Desktop */
 .desktop {
   position: absolute;
@@ -39,6 +43,24 @@
 }
 .desktop.wallpaper-solid-chalk {
   background: var(--c-chalk);
+}
+/* The sea colour comes from the image border (wallpapers.json), so the two always match. */
+.wallpaper {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.wallpaper-canvas {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: block;
+  image-rendering: pixelated;
+}
+.wallpaper-tile {
+  background-color: var(--c-night);
+  background-size: calc(var(--u) * 64);
+  image-rendering: pixelated;
 }
 .desktop-surface {
   position: absolute;
@@ -595,6 +617,47 @@
   animation: step-in 280ms steps(7, jump-end);
 }
 
+/* Achievement notices: bottom right, above the taskbar; in and out in 3 steps of 40 ms. */
+.toast-region {
+  position: fixed;
+  inset-inline-end: calc(var(--u) * 8);
+  inset-block-end: calc(var(--taskbar-h, 44px) + var(--u) * 8);
+  z-index: var(--z-toast);
+}
+.toast {
+  display: flex;
+  gap: calc(var(--u) * 6);
+  align-items: flex-start;
+  max-inline-size: calc(var(--u) * 240);
+  padding: calc(var(--u) * 8);
+}
+.toast p {
+  margin: 0;
+}
+.toast-title {
+  font-weight: normal;
+}
+.toast-text {
+  color: var(--text-muted-on-face);
+}
+.toast-icon {
+  flex: none;
+}
+.toast.is-entering {
+  animation: toast-in 120ms steps(3, jump-end);
+}
+.toast.is-leaving {
+  animation: toast-in 120ms steps(3, jump-end) reverse forwards;
+}
+@keyframes toast-in {
+  from {
+    transform: translateX(calc(100% + var(--u) * 8));
+  }
+  to {
+    transform: none;
+  }
+}
+
 /* Apps shared */
 .skeleton {
   display: grid;
@@ -666,8 +729,7 @@
   }
 }
 
-.app-error,
-.app-soon {
+.app-error {
   display: flex;
   flex-direction: column;
   gap: calc(var(--u) * 12);

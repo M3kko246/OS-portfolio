@@ -14,6 +14,7 @@ import { downloadCv, openApp } from '@/os/kernel/launcher';
 import { sessionStore } from '@/os/kernel/session';
 import { shellStore, useShell } from '@/os/kernel/shell';
 import { useT } from '@/os/lib/i18n';
+import { playSound } from '@/os/lib/sound';
 import { Menu, type MenuCloseReason, type MenuItem } from '@/os/ui/Menu';
 import { BrandMark } from '@/os/ui/primitives';
 
@@ -75,6 +76,7 @@ export function StartMenu() {
       label: t('start.shutdown'),
       glyph: Power,
       onSelect: () => {
+        playSound('close');
         shellStore.getState().setShutdown(true);
       },
     },

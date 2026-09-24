@@ -3,6 +3,7 @@ import { useOsIndex } from '@/os/context';
 import { shellStore, useShell } from '@/os/kernel/shell';
 import { useReducedMotion } from '@/os/lib/motion';
 import { useT } from '@/os/lib/i18n';
+import { playSound } from '@/os/lib/sound';
 import { BrandMark, cx } from '@/os/ui/primitives';
 
 /** Opens and closes a native <dialog> as a blocking modal in sync with `open`. */
@@ -60,8 +61,12 @@ export function Shutdown() {
   const on = useShell((s) => s.shutdown);
   const reduced = useReducedMotion();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasOnRef = useRef(false);
+  // After the render, when the session is no longer inert, focus can go back to Avvio.
   useEffect(() => {
     if (on) buttonRef.current?.focus();
+    else if (wasOnRef.current) document.getElementById('start-button')?.focus();
+    wasOnRef.current = on;
   }, [on]);
 
   if (!on) return null;
@@ -74,7 +79,7 @@ export function Shutdown() {
         className="px-btn px-btn-primary"
         onClick={() => {
           shellStore.getState().setShutdown(false);
-          document.getElementById('start-button')?.focus();
+          playSound('boot');
         }}
       >
         {t('shutdown.restart')}

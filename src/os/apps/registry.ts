@@ -13,8 +13,6 @@ import { User } from 'pixelarticons/react/User';
 import type { AppId } from './ids';
 import type { AppManifest, AppProps } from './manifest';
 
-// Terminale and Cestino (T5) show ComingSoon until their stage.
-const comingSoon = () => import('./ComingSoon');
 const bySlug = (params: Readonly<Record<string, string>>) => params.slug;
 
 export const manifests: Record<AppId, AppManifest> = {
@@ -151,7 +149,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 360, h: 220 },
     handheld: 'fullscreen',
     skeleton: 'document',
-    load: comingSoon,
+    load: () => import('./terminal/Terminal'),
   },
   settings: {
     id: 'settings',
@@ -171,11 +169,11 @@ export const manifests: Record<AppId, AppManifest> = {
     icon: 'trash',
     glyph: Trash,
     singleton: true,
-    defaultRect: { w: 480, h: 320 },
-    minSize: { w: 320, h: 220 },
+    defaultRect: { w: 560, h: 420 },
+    minSize: { w: 320, h: 260 },
     handheld: 'fullscreen',
     skeleton: 'grid',
-    load: comingSoon,
+    load: () => import('./trash/Trash'),
   },
 };
 

@@ -4,6 +4,8 @@ import type { Group } from 'three';
 import type { GameEngine } from '@/game/engine';
 import type { Vec2 } from '@/game/logic/math';
 import type { MaterialKit } from '@/game/world/materials';
+import { useSettings, type HatId } from '@/os/kernel/settings';
+import { playSound } from '@/os/lib/sound';
 
 export interface PlayerState {
   position: Vec2;
@@ -30,11 +32,51 @@ const LIMBS = [
   { key: 'armR', x: 0.34, y: 1.24, color: 'brick', w: 0.14, h: 0.5, sign: 0.8 },
 ] as const;
 
+/** Cosmetic hats unlocked by achievements, built from boxes like the rest of the character. */
+function Hat({ hat, kit }: { hat: HatId; kit: MaterialKit }) {
+  if (hat === 'captain') {
+    return (
+      <group position={[0, 1.8, 0]}>
+        <mesh castShadow material={kit.get('paper')}>
+          <boxGeometry args={[0.5, 0.14, 0.5]} />
+        </mesh>
+        <mesh position={[0, -0.05, 0.3]} material={kit.get('ink')}>
+          <boxGeometry args={[0.46, 0.04, 0.16]} />
+        </mesh>
+        <mesh position={[0, 0.01, 0.255]} material={kit.get('sun')}>
+          <boxGeometry args={[0.1, 0.07, 0.02]} />
+        </mesh>
+      </group>
+    );
+  }
+  if (hat === 'nightcap') {
+    return (
+      <group position={[0, 1.8, 0]}>
+        <mesh castShadow material={kit.get('plum')}>
+          <boxGeometry args={[0.46, 0.14, 0.46]} />
+        </mesh>
+        <mesh position={[0, 0.13, -0.06]} material={kit.get('plum')}>
+          <boxGeometry args={[0.32, 0.14, 0.32]} />
+        </mesh>
+        <mesh position={[0, 0.22, -0.2]} material={kit.get('plum')}>
+          <boxGeometry args={[0.18, 0.12, 0.18]} />
+        </mesh>
+        <mesh position={[0, 0.2, -0.34]} material={kit.get('paper')}>
+          <boxGeometry args={[0.12, 0.12, 0.12]} />
+        </mesh>
+      </group>
+    );
+  }
+  return null;
+}
+
 /** Voxel character: boxes for head, body, arms and legs; limbs swing with speed. */
 export function Player({ engine, kit }: { engine: GameEngine; kit: MaterialKit }) {
   const rootRef = useRef<Group>(null);
   const bodyRef = useRef<Group>(null);
   const limbsRef = useRef(new Map<string, Group>());
+  const stepRef = useRef(0);
+  const hat = useSettings((s) => s.hat);
 
   useFrame(({ clock }) => {
     const s = engine.player;
@@ -44,6 +86,12 @@ export function Player({ engine, kit }: { engine: GameEngine; kit: MaterialKit }
     root.rotation.y = s.heading;
     const stride = Math.min(1, s.speed / 4);
     const swing = Math.sin(s.phase) * stride * 0.75;
+    // A footstep each time the stride passes through zero, only on the ground.
+    const side = Math.sign(Math.sin(s.phase));
+    if (side !== 0 && side !== stepRef.current) {
+      if (stepRef.current !== 0 && stride > 0.3 && s.y <= 0.01) playSound('step');
+      stepRef.current = side;
+    }
     for (const limb of LIMBS) {
       const group = limbsRef.current.get(limb.key);
       if (group) group.rotation.x = swing * limb.sign;
@@ -78,6 +126,7 @@ export function Player({ engine, kit }: { engine: GameEngine; kit: MaterialKit }
         <mesh position={[-0.1, 1.52, 0.215]} material={kit.get('ink')}>
           <boxGeometry args={[0.06, 0.08, 0.02]} />
         </mesh>
+        <Hat hat={hat} kit={kit} />
       </group>
       {LIMBS.map((limb) => (
         <group

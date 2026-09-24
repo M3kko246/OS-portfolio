@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Glyph as GlyphComponent } from '@/os/apps/manifest';
+import { playSound } from '@/os/lib/sound';
 import { cx, Glyph } from './primitives';
 
 export interface MenuItem {
@@ -100,6 +101,7 @@ export function Menu({ id, label, items, onClose, className, at, header }: MenuP
                 setActive(i);
               }}
               onClick={() => {
+                playSound('click');
                 onClose('select');
                 item.onSelect();
               }}

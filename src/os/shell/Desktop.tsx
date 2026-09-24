@@ -21,12 +21,12 @@ import {
 } from '@/os/kernel/icons';
 import { openApp } from '@/os/kernel/launcher';
 import { useSession, sessionStore } from '@/os/kernel/session';
-import { useSettings } from '@/os/kernel/settings';
 import { shellStore } from '@/os/kernel/shell';
 import { useWindows } from '@/os/kernel/windows';
 import { useT } from '@/os/lib/i18n';
 import { useUnit } from '@/os/lib/pixel-scale';
 import { cx, Sprite } from '@/os/ui/primitives';
+import { useEffectiveWallpaper, Wallpaper } from './Wallpaper';
 
 interface DesktopIconDef {
   id: string;
@@ -75,7 +75,7 @@ export function Desktop() {
   const u = useUnit();
   const area = useWindows((s) => s.area);
   const saved = useSession((s) => s.iconPositions);
-  const wallpaper = useSettings((s) => s.wallpaper);
+  const wallpaper = useEffectiveWallpaper();
   const grid = gridFor(area);
   const cells = useMemo(() => placeIcons(IDS, saved, gridFor(area)), [saved, area]);
   const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set());
@@ -242,6 +242,7 @@ export function Desktop() {
 
   return (
     <div className={cx('desktop', `wallpaper-${wallpaper}`)}>
+      <Wallpaper />
       <div
         className="desktop-surface"
         role="listbox"

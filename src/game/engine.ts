@@ -1,5 +1,6 @@
 import type { OrthographicCamera } from 'three';
 import { sessionStore } from '@/os/kernel/session';
+import { playSound } from '@/os/lib/sound';
 import { cameraBasis, cameraOffset, snapToPixelGrid, ZOOM_LEVELS } from './logic/camera';
 import { createInput, type InputState } from './logic/input';
 import { PLAYER_RADIUS, type WorldLayout } from './logic/layout';
@@ -63,6 +64,7 @@ export class GameEngine {
   teleport(index: number): void {
     const spot = this.layout.islands[index]?.spot;
     if (!spot) return;
+    playSound('splash');
     this.route = [];
     this.player.position = spot;
     this.target = spot;

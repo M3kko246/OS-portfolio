@@ -2,6 +2,7 @@ import { t } from '@/i18n';
 import type { AppId, AppParams } from '@/os/apps/ids';
 import { manifests } from '@/os/apps/registry';
 import { announce } from '@/os/lib/announce';
+import { playSound } from '@/os/lib/sound';
 import type { OsIndex } from '@/os/types';
 import { settingsStore } from './settings';
 import { windowIdFor, windowStore, type WindowId, type WindowState } from './windows';
@@ -50,6 +51,7 @@ export function openApp(appId: AppId, params: AppParams = {}, opener?: Element |
       openRects.set(id, opener.getBoundingClientRect());
     }
     announce(t('window.opened', { title }, settingsStore.getState().lang));
+    playSound('open');
   }
   return id;
 }
@@ -66,6 +68,7 @@ export function closeWindow(win: WindowState): void {
   openers.delete(win.id);
   windowStore.getState().close(win.id);
   announce(t('window.closed', { title: win.title }, settingsStore.getState().lang));
+  playSound('close');
   // Focus goes back to whatever opened the window, or to the desktop.
   if (opener?.isConnected && opener.checkVisibility()) opener.focus();
   else document.querySelector<HTMLElement>('[data-desktop-focus]')?.focus();

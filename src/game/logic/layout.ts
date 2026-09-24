@@ -232,6 +232,17 @@ export function layoutWorld(projects: readonly ProjectInput[]): WorldLayout {
   };
 }
 
+/**
+ * Identifies the archipelago that a set of projects produces. The wallpapers rendered from the
+ * world carry it, so a build can tell when they no longer match the content.
+ */
+export function layoutKey(projects: readonly ProjectInput[]): string {
+  const inputs = [...projects]
+    .sort((a, b) => a.order - b.order)
+    .map((p) => [p.slug, p.order, p.island.biome, p.island.landmark, p.island.seed ?? null]);
+  return hashString(JSON.stringify(inputs)).toString(16);
+}
+
 /** True if a prop at p stays clear of the straight walks centre-spot and centre-bridge ends. */
 function corridorClear(
   p: Vec2,

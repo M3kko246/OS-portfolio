@@ -67,6 +67,24 @@ function careerManifest() {
   };
 }
 
+/**
+ * Dev-only route /dev/wallpaper, where scripts/render-wallpapers.ts renders the desktop
+ * wallpapers from the game world. It never exists in a build.
+ * @returns {import('astro').AstroIntegration}
+ */
+function wallpaperStudio() {
+  return {
+    name: 'wallpaper-studio',
+    hooks: {
+      'astro:config:setup': ({ command, injectRoute }) => {
+        if (command === 'dev') {
+          injectRoute({ pattern: '/dev/wallpaper', entrypoint: './src/dev/wallpaper.astro' });
+        }
+      },
+    },
+  };
+}
+
 export default defineConfig({
   site,
   // `/classica.html` is served at `/classica` without a redirect, matching the canonical URLs.
@@ -77,7 +95,11 @@ export default defineConfig({
     prerenderEnvironment: 'node',
     imageService: 'compile',
   }),
-  integrations: [react(), sitemap({ filter: (page) => !page.includes('/data/') })],
+  integrations: [
+    react(),
+    sitemap({ filter: (page) => !page.includes('/data/') }),
+    wallpaperStudio(),
+  ],
   vite: {
     plugins: [tailwindcss(), careerManifest()],
     // three.js makes the game chunk large on purpose; pnpm budgets is the real limit.

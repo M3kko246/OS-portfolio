@@ -15,15 +15,17 @@ file records conventions, commands and decisions so every session starts aligned
 
 ## Commands
 
-| Command                       | What it does                                          |
-| ----------------------------- | ----------------------------------------------------- |
-| `pnpm dev`                    | Dev server (CSP is not applied in dev)                |
-| `pnpm build` / `pnpm preview` | Static build / serve it on port 4321                  |
-| `pnpm verify`                 | astro check, ESLint, Prettier check, Vitest, build    |
-| `pnpm test:e2e`               | Playwright + axe against `pnpm preview`               |
-| `pnpm lighthouse`             | Lighthouse with the brief's thresholds (after build)  |
-| `pnpm tokens`                 | Regenerate `src/styles/tokens.css` from `src/design`  |
-| `pnpm fonts`                  | Subset fonts from `art/fonts` into `src/assets/fonts` |
+| Command                       | What it does                                           |
+| ----------------------------- | ------------------------------------------------------ |
+| `pnpm dev`                    | Dev server (CSP is not applied in dev)                 |
+| `pnpm build` / `pnpm preview` | Static build / serve it on port 4321                   |
+| `pnpm verify`                 | astro check, ESLint, Prettier check, Vitest, build     |
+| `pnpm test:e2e`               | Playwright + axe against `pnpm preview`                |
+| `pnpm lighthouse`             | Lighthouse with the brief's thresholds (after build)   |
+| `pnpm tokens`                 | Regenerate `src/styles/tokens.css` from `src/design`   |
+| `pnpm fonts`                  | Subset fonts from `art/fonts` into `src/assets/fonts`  |
+| `pnpm sprites`                | Redraw sprites, cursor, night light, Cestino drafts    |
+| `pnpm wallpapers`             | Render the 4 wallpapers from the game world (Chromium) |
 
 ## Structure
 
@@ -121,3 +123,19 @@ file records conventions, commands and decisions so every session starts aligned
   chunks so the loader shows real download progress. `?debug=perf` shows fps and draw calls.
 - Headless Chromium needs `--enable-unsafe-swiftshader` for WebGL (Playwright and Vitest).
 - R3F logs a "THREE.Clock deprecated" warning with three r186: it comes from the library.
+- Terminale: `apps/terminal/shell.ts` is a pure function (line, state, VFS) -> lines, effects,
+  state; the component renders lines and applies effects. `cat` reads `text` on VFS files;
+  path lookup forgives case. Tab completes only on a non-empty line, so Tab still leaves.
+- Achievements (`kernel/achievements.ts`): five, each with one cosmetic (hat, terminal theme,
+  wallpaper). Unlocks persist in the session store; toasts are transient. Visit, night and
+  island checks start after boot (`watchAchievements`).
+- Sounds (`lib/sound.ts`): ZzFX parameters; `zzfx` creates its AudioContext on import, so it
+  is imported dynamically on the first sound, only with sounds on and sticky user activation.
+- Wallpapers: `pnpm wallpapers` runs `astro dev` (the `/dev/wallpaper` route is injected only
+  in dev) and renders the world from afar in headless Chromium, reading the drawing buffer
+  (screenshots shift colours). Output: 4 PNGs (exact palette, uniform sea border) and
+  `wallpapers.json` (layout key, sea colours, night-light positions). `index.astro` fails the
+  build when the layout key no longer matches the projects. The desktop draws the image on a
+  480x270 canvas scaled by CSS: whole-number scale, lights on exact art pixels, and a canvas is
+  never the LCP element (an <img> wallpaper pushed LCP on / to 3.9 s).
+- Reduced motion freezes water and windmill: wallpaper renders are byte-identical run to run.

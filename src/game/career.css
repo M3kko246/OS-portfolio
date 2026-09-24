@@ -1,0 +1,244 @@
+/* Carriera: canvas plus a pixel HUD in HTML on top of it. */
+.career {
+  position: relative;
+  block-size: 100%;
+  min-block-size: calc(var(--u) * 200);
+  overflow: hidden;
+  background: var(--c-night);
+  color: var(--text);
+  font-family: var(--ff-pixel);
+  font-size: var(--ui-font-size);
+  line-height: calc(var(--u) * 14);
+  outline: none;
+  touch-action: none;
+}
+.career:focus-visible {
+  outline: var(--u) dashed var(--c-sun);
+  outline-offset: calc(var(--u) * -2);
+}
+.career > div:first-child {
+  position: absolute !important;
+  inset: 0;
+}
+.career canvas {
+  image-rendering: pixelated;
+}
+
+.career-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.career-hud > * {
+  pointer-events: auto;
+}
+.hud-top-left,
+.hud-hint,
+.hud-prompt > * {
+  padding: calc(var(--u) * 3) calc(var(--u) * 6);
+  background: var(--c-ink);
+  color: var(--c-paper);
+  box-shadow: 0 0 0 var(--u) var(--c-paper);
+}
+.hud-top-left {
+  position: absolute;
+  inset-block-start: calc(var(--u) * 8);
+  inset-inline-start: calc(var(--u) * 8);
+}
+.hud-title {
+  color: var(--c-sun);
+}
+.hud-top-right {
+  position: absolute;
+  inset-block-start: calc(var(--u) * 8);
+  inset-inline-end: calc(var(--u) * 8);
+  display: flex;
+  gap: calc(var(--u) * 4);
+}
+.hud-hint {
+  position: absolute;
+  inset-block-end: calc(var(--u) * 8);
+  inset-inline-start: calc(var(--u) * 8);
+  max-inline-size: min(calc(var(--u) * 260), 60%);
+}
+.hud-prompt {
+  position: absolute;
+  inset-block-end: calc(var(--u) * 40);
+  inset-inline: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  pointer-events: none;
+}
+.hud-sign {
+  color: var(--c-sun);
+}
+.hud-rotate {
+  position: absolute;
+  inset-block-end: calc(var(--u) * 8);
+  inset-inline-end: calc(var(--u) * 8);
+  display: flex;
+  gap: calc(var(--u) * 4);
+}
+
+.hud-panel {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 3);
+  color: var(--text);
+}
+.hud-panel .dialog-titlebar {
+  justify-content: space-between;
+  padding-inline-end: calc(var(--u) * 2);
+}
+.hud-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 8);
+  margin-block-start: calc(var(--u) * 3);
+  padding: calc(var(--u) * 10);
+  overflow: auto;
+  background: var(--well);
+  box-shadow:
+    inset var(--u) var(--u) 0 0 var(--face-lo),
+    inset calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--face-hi);
+}
+/* Project sheet: at the side on wide windows (the world stays visible), from the bottom on narrow. */
+.hud-sheet {
+  inset-block: calc(var(--u) * 40) calc(var(--u) * 8);
+  inset-inline-end: calc(var(--u) * 8);
+  inline-size: min(calc(var(--u) * 240), 45%);
+}
+@container (max-width: 520px) {
+  .hud-sheet {
+    inset-block: auto 0;
+    inset-inline: 0;
+    inline-size: auto;
+    max-block-size: 70%;
+  }
+}
+.hud-sheet img {
+  inline-size: 100%;
+  block-size: auto;
+  box-shadow: 0 0 0 var(--u) var(--edge);
+}
+.hud-summary,
+.hud-outcomes {
+  font-family: var(--ff-read);
+  font-size: var(--text-read);
+  line-height: 1.5;
+}
+.hud-outcomes {
+  padding-inline-start: 1.1rem;
+  list-style: square;
+}
+.hud-meta {
+  color: var(--text-muted);
+}
+.hud-actions,
+.hud-pause-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 6);
+}
+.hud-map,
+.hud-pause,
+.hud-graphics {
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: min(calc(var(--u) * 260), 90%);
+  max-block-size: 80%;
+  transform: translate(-50%, -50%);
+}
+.hud-map-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 2);
+}
+.hud-map-item {
+  display: grid;
+  inline-size: 100%;
+  grid-template-columns: calc(var(--u) * 40) 1fr auto;
+  gap: calc(var(--u) * 6);
+  padding: calc(var(--u) * 4) calc(var(--u) * 6);
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: start;
+}
+.hud-map-item:hover,
+.hud-map-item:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.hud-map-year,
+.hud-map-here {
+  color: var(--text-muted);
+}
+.hud-map-item:is(:hover, :focus-visible) :is(.hud-map-year, .hud-map-here) {
+  color: var(--on-accent);
+}
+
+/* Teleport: a stepped fade through ink. */
+@keyframes hud-flash {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.hud-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--c-ink);
+  pointer-events: none;
+  opacity: 0;
+  animation: hud-flash 280ms steps(7, jump-end);
+}
+
+.career-perf {
+  position: absolute;
+  inset-block-start: calc(var(--u) * 44);
+  inset-inline-start: calc(var(--u) * 8);
+  padding: var(--u) calc(var(--u) * 4);
+  background: var(--c-ink);
+  color: var(--c-meadow);
+  pointer-events: none;
+}
+
+.career-lost {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  background: var(--well);
+}
+
+.career-loading {
+  display: flex;
+  block-size: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 16);
+  background: var(--c-night);
+  color: var(--c-paper);
+  font-family: var(--ff-pixel);
+}
+.career-progress {
+  inline-size: min(calc(var(--u) * 200), 80%);
+  block-size: calc(var(--u) * 10);
+  padding: calc(var(--u) * 2);
+  background: var(--c-ink);
+  box-shadow: 0 0 0 var(--u) var(--c-paper);
+}
+.career-progress-bar {
+  display: block;
+  block-size: 100%;
+  background: var(--c-sun);
+  transform-origin: left center;
+}

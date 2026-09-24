@@ -258,6 +258,41 @@ export const it = {
   'settings.resetConfirm': 'Ripristina',
   'settings.resetDone': 'Impostazioni ripristinate',
 
+  'career.visited': 'Isole visitate {n}/{total}',
+  'career.map': 'Mappa',
+  'career.mapTitle': 'Mappa delle isole',
+  'career.fullscreen': 'Schermo intero',
+  'career.exitFullscreen': 'Esci dallo schermo intero',
+  'career.exit': 'Esci',
+  'career.graphics': 'Impostazioni grafiche',
+  'career.pause': 'Pausa',
+  'career.resume': 'Riprendi',
+  'career.exitDesktop': 'Esci al desktop',
+  'career.close': 'Chiudi',
+  'career.rotateLeft': 'Ruota la vista a sinistra',
+  'career.rotateRight': 'Ruota la vista a destra',
+  'career.hint':
+    'WASD o frecce per camminare, Maiusc per correre, Spazio per saltare, E per interagire, Z e C per ruotare. Clic su un punto per andarci.',
+  'career.prompt': 'Premi E per aprire {name}',
+  'career.canvas':
+    'Mondo di Carriera, un arcipelago in cui ogni isola è un progetto. Con la tastiera usa la Mappa per raggiungere le isole.',
+  'career.loading': 'Caricamento del mondo',
+  'career.loadError': 'Il mondo di Carriera non si è caricato.',
+  'career.noWebgl':
+    'Questo dispositivo non riesce a mostrare la grafica 3D. Puoi vedere gli stessi progetti nella cartella Progetti.',
+  'career.openProjects': 'Apri Progetti',
+  'career.porto': 'Porto',
+  'career.next': 'Prossima isola',
+  'career.nextSign': 'Il prossimo progetto potrebbe essere il tuo.',
+  'career.controls': 'Cartello dei comandi',
+  'career.here': 'Sei qui',
+
+  'settings.quality': 'Qualità grafica',
+  'settings.quality.auto': 'Auto',
+  'settings.quality.high': 'Alta',
+  'settings.quality.low': 'Bassa',
+  'settings.dithering': 'Retinatura nel gioco',
+
   'meta.classicDescription':
     'Tutto il portfolio in una sola pagina: progetti, percorso e contatti.',
 } as const;

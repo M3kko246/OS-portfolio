@@ -258,5 +258,40 @@ export const en: Messages = {
   'settings.resetConfirm': 'Reset',
   'settings.resetDone': 'Settings reset',
 
+  'career.visited': 'Islands visited {n}/{total}',
+  'career.map': 'Map',
+  'career.mapTitle': 'Island map',
+  'career.fullscreen': 'Full screen',
+  'career.exitFullscreen': 'Leave full screen',
+  'career.exit': 'Exit',
+  'career.graphics': 'Graphics settings',
+  'career.pause': 'Pause',
+  'career.resume': 'Resume',
+  'career.exitDesktop': 'Exit to desktop',
+  'career.close': 'Close',
+  'career.rotateLeft': 'Turn the view left',
+  'career.rotateRight': 'Turn the view right',
+  'career.hint':
+    'WASD or arrows to walk, Shift to run, Space to jump, E to interact, Z and C to turn. Click a spot to walk there.',
+  'career.prompt': 'Press E to open {name}',
+  'career.canvas':
+    'Career world, an archipelago where every island is a project. With the keyboard, use the Map to reach the islands.',
+  'career.loading': 'Loading the world',
+  'career.loadError': 'The Career world did not load.',
+  'career.noWebgl':
+    'This device cannot show 3D graphics. The same projects are in the Projects folder.',
+  'career.openProjects': 'Open Projects',
+  'career.porto': 'Harbour',
+  'career.next': 'Next island',
+  'career.nextSign': 'The next project could be yours.',
+  'career.controls': 'Controls sign',
+  'career.here': 'You are here',
+
+  'settings.quality': 'Graphics quality',
+  'settings.quality.auto': 'Auto',
+  'settings.quality.high': 'High',
+  'settings.quality.low': 'Low',
+  'settings.dithering': 'Dithering in the game',
+
   'meta.classicDescription': 'The whole portfolio on one page: projects, path and contacts.',
 };

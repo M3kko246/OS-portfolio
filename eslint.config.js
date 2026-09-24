@@ -23,6 +23,8 @@ export default defineConfig(
     },
     rules: {
       '@typescript-eslint/restrict-template-expressions': ['error', { allowNumber: true }],
+      // Conflicts with no-non-null-assertion (strict): explicit `as T` narrowing stays allowed.
+      '@typescript-eslint/non-nullable-type-assertion-style': 'off',
     },
   },
   astro.configs['flat/recommended'],

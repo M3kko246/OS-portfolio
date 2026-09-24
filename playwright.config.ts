@@ -18,5 +18,14 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !CI,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        // WebGL in headless Chromium runs on SwiftShader, which needs an explicit opt-in.
+        launchOptions: { args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] },
+      },
+    },
+  ],
 });

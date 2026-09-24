@@ -66,4 +66,23 @@ const ok = total <= BUDGET_INITIAL;
 console.log(
   `Initial JS on /: ${(total / 1024).toFixed(1)} KB gzip (budget ${BUDGET_INITIAL / 1024} KB) ${ok ? 'OK' : 'OVER BUDGET'}`,
 );
-if (!ok) process.exit(1);
+
+// Carriera: what the game adds on top of what the page already loaded.
+const BUDGET_CAREER = 450 * 1024;
+let careerOk = true;
+const manifestPath = join(dist, 'career-manifest.json');
+if (existsSync(manifestPath)) {
+  const { files: careerFiles } = JSON.parse(await readFile(manifestPath, 'utf8')) as {
+    files: { url: string }[];
+  };
+  let career = 0;
+  for (const { url } of careerFiles) {
+    const file = join(dist, url);
+    if (!files.has(file)) career += await gzipSize(file);
+  }
+  careerOk = career <= BUDGET_CAREER;
+  console.log(
+    `Carriera bundle: ${(career / 1024).toFixed(1)} KB gzip (budget ${BUDGET_CAREER / 1024} KB) ${careerOk ? 'OK' : 'OVER BUDGET'}`,
+  );
+}
+if (!ok || !careerOk) process.exit(1);

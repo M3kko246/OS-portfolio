@@ -25,6 +25,48 @@ function demoOrigins() {
   return [...origins];
 }
 
+/**
+ * Writes /career-manifest.json: the chunks Carriera needs and their sizes, so the game can show
+ * a progress bar based on real bytes before its dynamic import.
+ */
+function careerManifest() {
+  return {
+    name: 'career-manifest',
+    /** @type {'build'} */
+    apply: 'build',
+    /**
+     * @this {{ emitFile: (file: { type: 'asset'; fileName: string; source: string }) => void }}
+     * @param {unknown} _
+     * @param {Record<string, { type: string; fileName: string; facadeModuleId?: string | null; code: string; imports: string[] }>} bundle
+     */
+    generateBundle(_, bundle) {
+      const entry = Object.values(bundle).find(
+        (chunk) =>
+          chunk.type === 'chunk' &&
+          chunk.facadeModuleId?.replaceAll('\\', '/').endsWith('/src/game/CareerGame.tsx'),
+      );
+      if (!entry) return;
+      /** @type {Map<string, number>} */
+      const files = new Map();
+      /** @param {string} name */
+      const visit = (name) => {
+        const chunk = bundle[name];
+        if (!chunk || chunk.type !== 'chunk' || files.has(name)) return;
+        files.set(name, Buffer.byteLength(chunk.code));
+        for (const child of chunk.imports) visit(child);
+      };
+      visit(entry.fileName);
+      this.emitFile({
+        type: 'asset',
+        fileName: 'career-manifest.json',
+        source: JSON.stringify({
+          files: [...files].map(([file, size]) => ({ url: `/${file}`, size })),
+        }),
+      });
+    },
+  };
+}
+
 export default defineConfig({
   site,
   // `/classica.html` is served at `/classica` without a redirect, matching the canonical URLs.
@@ -37,7 +79,9 @@ export default defineConfig({
   }),
   integrations: [react(), sitemap({ filter: (page) => !page.includes('/data/') })],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), careerManifest()],
+    // three.js makes the game chunk large on purpose; pnpm budgets is the real limit.
+    build: { chunkSizeWarningLimit: 900 },
   },
   env: {
     schema: {

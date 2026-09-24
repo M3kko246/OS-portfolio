@@ -79,6 +79,11 @@ export function createWindowStore(area: Size = { w: 1024, h: 700 }) {
       const id = windowIdFor(spec);
       const existing = get().windows[id];
       if (existing) {
+        // Reopening with new parameters (e.g. Carriera on another island) updates them.
+        if (spec.params && JSON.stringify(spec.params) !== JSON.stringify(existing.params)) {
+          const params = spec.params;
+          set((state) => ({ windows: { ...state.windows, [id]: { ...existing, params } } }));
+        }
         get().focus(id);
         return id;
       }

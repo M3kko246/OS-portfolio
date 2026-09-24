@@ -43,7 +43,13 @@ function Radios<K extends keyof SettingsData>({
   );
 }
 
-function Toggle({ setting, label }: { setting: 'crt' | 'pixelCursor'; label: string }) {
+function Toggle({
+  setting,
+  label,
+}: {
+  setting: 'crt' | 'pixelCursor' | 'dithering';
+  label: string;
+}) {
   const value = useSettings((s) => s[setting]);
   return (
     <label className="choice">
@@ -118,10 +124,20 @@ export default function Settings({ params }: AppProps) {
           ['en', 'settings.lang.en'],
         ]}
       />
+      <Radios
+        setting="quality"
+        legend={t('settings.quality')}
+        choices={[
+          ['auto', 'settings.quality.auto'],
+          ['high', 'settings.quality.high'],
+          ['low', 'settings.quality.low'],
+        ]}
+      />
       <fieldset className="settings-group">
         <legend className="font-bold">{t('app.settings')}</legend>
         <Toggle setting="crt" label={t('settings.crt')} />
         <Toggle setting="pixelCursor" label={t('settings.cursor')} />
+        <Toggle setting="dithering" label={t('settings.dithering')} />
       </fieldset>
       <p>
         <button

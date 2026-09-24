@@ -109,3 +109,15 @@ file records conventions, commands and decisions so every session starts aligned
   `entry.rendered.html`) and `/data/photos.json` (tiny, medium, full variants).
 - Vitest uses a plain config (not getViteConfig): the adapter would run tests in workerd.
 - Each app imports its own CSS (`explorer.css`, `photos.css`, shared `apps.css`).
+- Carriera (`src/game`): pure logic in `logic/` (layout, walkable SDFs, Dijkstra routes, camera
+  math, input), tested in Node. `engine.ts` is the imperative per-frame core (outside React: the
+  React Compiler rules forbid mutating state in frame callbacks); components only call
+  `engine.step` and read `engine.player`. Porto and next-island features live in `PORTO` /
+  `NEXT` (layout.ts) so meshes, obstacles and interaction spots share coordinates.
+- Pipeline: RenderPixelatedPass → OutputPass → PaletteQuantizePass (OKLab nearest colour,
+  Bayer dither on game pixels). GLSL in `fx/glsl.ts` is shared with
+  `tests/game/quantize.browser.test.ts`, which runs it in real WebGL (Vitest browser mode).
+- The game bundle is lazy: `/career-manifest.json` (Vite plugin in astro.config) lists its
+  chunks so the loader shows real download progress. `?debug=perf` shows fps and draw calls.
+- Headless Chromium needs `--enable-unsafe-swiftshader` for WebGL (Playwright and Vitest).
+- R3F logs a "THREE.Clock deprecated" warning with three r186: it comes from the library.

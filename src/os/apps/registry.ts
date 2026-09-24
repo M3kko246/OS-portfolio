@@ -13,7 +13,7 @@ import { User } from 'pixelarticons/react/User';
 import type { AppId } from './ids';
 import type { AppManifest, AppProps } from './manifest';
 
-// Carriera (T4), Terminale and Cestino (T5) show ComingSoon until their stage.
+// Terminale and Cestino (T5) show ComingSoon until their stage.
 const comingSoon = () => import('./ComingSoon');
 const bySlug = (params: Readonly<Record<string, string>>) => params.slug;
 
@@ -40,7 +40,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 480, h: 320 },
     handheld: 'fullscreen',
     skeleton: 'canvas',
-    load: comingSoon,
+    load: () => import('./career/Career'),
   },
   explorer: {
     id: 'explorer',

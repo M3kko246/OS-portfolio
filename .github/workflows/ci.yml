@@ -27,10 +27,11 @@ jobs:
       - run: pnpm check
       - run: pnpm lint
       - run: pnpm format:check
+      # Chromium is needed from here on: browser unit tests (WebGL), e2e and Lighthouse.
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test
       - run: pnpm build
       - run: pnpm budgets
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - run: pnpm lighthouse
       - uses: actions/upload-artifact@v7

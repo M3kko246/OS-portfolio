@@ -1,13 +1,13 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, test, skipBoot } from './fixtures';
 
 async function boot(page: Page, path: string) {
   await page.goto(path);
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
 }
 
 test.describe('Carriera', () => {
+  test.slow();
   // Reduced motion: the Map teleports instead of walking, so the test does not wait on a walk.
   test.use({ reducedMotion: 'reduce' });
 

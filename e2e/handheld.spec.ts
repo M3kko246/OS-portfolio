@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, skipBoot, test } from './fixtures';
 
 test.use({
   viewport: { width: 390, height: 844 },
@@ -28,8 +28,7 @@ async function boot(page: Page, path = '/', { welcome = false } = {}) {
   }
   await page.clock.setFixedTime(new Date(2026, 8, 24, 12, 0));
   await page.goto(path);
-  await page.locator('#boot').tap();
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page, { tap: true });
 }
 
 test('the home screen has a status bar, a four-column grid and the dock', async ({

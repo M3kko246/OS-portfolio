@@ -1,10 +1,9 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, test, skipBoot } from './fixtures';
 
 async function boot(page: Page, path = '/') {
   await page.goto(path);
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
 }
 
 test('Progetti opens a project card, and the card opens its case study', async ({

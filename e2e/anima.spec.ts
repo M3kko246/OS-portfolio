@@ -1,12 +1,11 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, test, skipBoot } from './fixtures';
 
 /** Local time is fixed, so time-of-day wallpapers and the night achievement are predictable. */
 async function boot(page: Page, path: string, hour = 12) {
   await page.clock.setFixedTime(new Date(2026, 8, 24, hour, 0));
   await page.goto(path);
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
 }
 
 test('the Terminale runs commands, completes with Tab and unlocks Curioso once', async ({
@@ -43,10 +42,9 @@ test('the Terminale runs commands, completes with Tab and unlocks Curioso once',
 
   // The achievement survives a reload and is not announced again.
   await page.reload();
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
   await page.goto('/?app=settings');
-  await page.keyboard.press('Shift');
+  await skipBoot(page);
   const settings = page.getByRole('dialog', { name: 'Impostazioni' });
   await expect(settings.getByRole('heading', { name: 'Traguardi 1/5' })).toBeVisible();
   await expect(settings.getByRole('radio', { name: /Ambra/ })).toBeEnabled();

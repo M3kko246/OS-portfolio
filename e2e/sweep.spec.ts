@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, test, skipBoot } from './fixtures';
 
 /**
  * Final check (PROMPT.md §6): every app, opened from its deep link in both themes, with no
@@ -41,8 +41,7 @@ async function open(page: Page, search: string) {
   });
   await page.clock.setFixedTime(new Date(2026, 8, 24, 12, 0));
   await page.goto(`/${search}`);
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {

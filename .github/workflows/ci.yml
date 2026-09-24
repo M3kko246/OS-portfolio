@@ -15,6 +15,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -37,7 +38,9 @@ jobs:
         env:
           WRANGLER_SEND_METRICS: 'false'
       - run: pnpm test:e2e
+        timeout-minutes: 20
       - run: pnpm lighthouse
+        timeout-minutes: 10
       # Lighthouse and Playwright reports stay available for every run, not only failures.
       - uses: actions/upload-artifact@v7
         if: always()

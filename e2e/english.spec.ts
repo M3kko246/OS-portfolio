@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, expectNoSeriousA11yIssues, test } from './fixtures';
+import { expect, expectNoSeriousA11yIssues, test, skipBoot } from './fixtures';
 
 async function hreflang(page: Page): Promise<Record<string, string>> {
   const entries = await page
@@ -72,8 +72,7 @@ test('the system speaks English on /en and switching language moves the address'
     );
   });
   await page.goto('/en?app=terminal');
-  await page.keyboard.press('Shift');
-  await expect(page.locator('#boot')).toBeHidden();
+  await skipBoot(page);
 
   await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
   const terminal = page.getByRole('dialog', { name: 'Terminal' });

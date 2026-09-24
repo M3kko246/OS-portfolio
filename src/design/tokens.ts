@@ -1,3 +1,4 @@
+import { layers } from '@/os/kernel/layers';
 import { palette, paletteNames } from './palette';
 import { commonDevicePixelRatios, pixelUnit, UI_FONT_ART_PX } from './pixel';
 import { semanticTokens, shadowInkPercent, themeTokens, type ThemeName } from './themes';
@@ -36,10 +37,18 @@ function unitMediaQueries(): string {
 /** Renders src/styles/tokens.css. Pure, so tests can check the committed file is current. */
 export function renderTokensCss(): string {
   const raw = paletteNames.map((name) => `  --c-${name}: ${palette[name]};`).join('\n');
+  const z = Object.entries(layers)
+    .map(
+      ([name, value]) => `  --z-${name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}: ${value};`,
+    )
+    .join('\n');
   return `${HEADER}
 
 :root {
 ${raw}
+
+  /* Layers from src/os/kernel/layers.ts: the only z-index values in the project. */
+${z}
 
   /* One art pixel in CSS px; refined at runtime by the OS from the exact devicePixelRatio. */
   --u: ${round(pixelUnit(1))}px;

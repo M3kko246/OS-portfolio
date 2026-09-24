@@ -4,6 +4,7 @@ const wordCount = (text: string) => text.trim().split(/\s+/).filter(Boolean).len
 
 export const profileSchema = z.object({
   name: z.string().min(1),
+  firstName: z.string().min(1),
   osName: z.string().min(1),
   initials: z.string().min(1).max(3),
   role: z.string().min(1),
@@ -24,6 +25,7 @@ export type Profile = z.infer<typeof profileSchema>;
 /** Every placeholder is marked [DA COMPILARE] and listed in CONTENT_TODO.md. */
 export const profile: Profile = profileSchema.parse({
   name: 'Nome Cognome [DA COMPILARE]',
+  firstName: 'Nome [DA COMPILARE]',
   osName: 'NomeOS [DA COMPILARE]',
   initials: 'NC',
   role: 'Ruolo [DA COMPILARE]',

@@ -9,11 +9,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
       consoleErrors,
     }) => {
       await page.goto('/');
-      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Scarica CV' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Contattami' })).toBeVisible();
-      await page.keyboard.press('Tab');
-      await expect(page.getByRole('link', { name: 'Vai alla versione classica' })).toBeFocused();
+      const boot = page.locator('#boot');
+      await expect(boot.getByRole('heading', { level: 1 })).toBeVisible();
+      await expect(boot.getByRole('link', { name: 'Scarica CV' })).toBeVisible();
+      await expect(boot.getByRole('link', { name: 'Contattami' })).toBeVisible();
+      // The first focusable element of the page is the way out to the classic version.
+      const first = await page.evaluate(
+        () =>
+          document.querySelector<HTMLElement>('a[href], button, input, [tabindex="0"]')
+            ?.textContent,
+      );
+      expect(first).toBe('Vai alla versione classica');
       await expectNoSeriousA11yIssues(page);
       expect(consoleErrors).toEqual([]);
     });

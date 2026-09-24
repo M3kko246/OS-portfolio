@@ -15,7 +15,7 @@ Ogni voce qui corrisponde a un segnaposto `[DA COMPILARE]` nel sito o nel codice
 - [ ] Social (LinkedIn, GitHub, altro)
 - [ ] CV in PDF, italiano (e inglese, opzionale)
 - [ ] Lingue parlate
-- [ ] Foto reale per Chi sono e per l'avatar
+- [ ] Foto reale per Chi sono e per l'avatar (oggi la finestra Benvenuto mostra il marchio al posto dell'avatar)
 
 ## Contenuti
 

@@ -1,0 +1,665 @@
+/*
+ * The system shell. Every size is a multiple of --u (one art pixel); reading text uses rem.
+ * Motion is stepped: durations are multiples of 40 ms with steps() easing.
+ */
+
+.os {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--ff-pixel);
+  font-size: var(--ui-font-size);
+  line-height: calc(var(--u) * 14);
+  user-select: none;
+}
+
+.os :is(input, textarea, [contenteditable]),
+.os .window-body {
+  user-select: text;
+}
+
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+  animation-duration: 0s !important;
+  transition-duration: 0s !important;
+}
+
+.os .skip-link {
+  z-index: var(--z-menu);
+}
+
+/* Desktop */
+.desktop {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-wallpaper);
+  background: var(--c-night);
+}
+.desktop.wallpaper-solid-chalk {
+  background: var(--c-chalk);
+}
+.desktop-surface {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-icons);
+  touch-action: none;
+}
+
+.desktop-icon {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: flex;
+  inline-size: calc(var(--u) * 80);
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 2);
+  padding-block-start: calc(var(--u) * 4);
+  outline: none;
+  touch-action: none;
+  cursor: default;
+}
+.desktop-icon.is-dragging {
+  opacity: 0.7;
+}
+.sprite {
+  display: block;
+  inline-size: calc(var(--u) * 32);
+  block-size: calc(var(--u) * 32);
+  image-rendering: pixelated;
+}
+.desktop-icon-label {
+  display: -webkit-box;
+  max-inline-size: calc(var(--u) * 76);
+  overflow: hidden;
+  padding: 0 calc(var(--u) * 2);
+  color: var(--c-paper);
+  text-align: center;
+  text-shadow:
+    var(--u) var(--u) 0 var(--c-ink),
+    calc(var(--u) * -1) 0 0 var(--c-ink),
+    0 calc(var(--u) * -1) 0 var(--c-ink);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.wallpaper-solid-chalk .desktop-icon-label {
+  color: var(--c-ink);
+  text-shadow: none;
+}
+.desktop-icon[aria-selected='true'] .desktop-icon-label {
+  background: var(--accent);
+  color: var(--on-accent);
+  text-shadow: none;
+}
+.desktop-icon[aria-selected='true'] .sprite {
+  filter: brightness(0.85);
+}
+/* Visible on any wallpaper: dashed paper over an ink line. */
+.desktop-icon:focus-visible {
+  outline: var(--u) dashed var(--c-paper);
+  outline-offset: 0;
+  box-shadow: 0 0 0 var(--u) var(--c-ink);
+}
+.marquee,
+.snap-preview,
+.zoom-rect {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  outline: var(--u) dashed var(--c-paper);
+  box-shadow:
+    0 0 0 var(--u) var(--c-ink),
+    inset 0 0 0 var(--u) var(--c-ink);
+}
+.marquee {
+  background: color-mix(in oklab, var(--c-sun) 12%, transparent);
+}
+
+/* Windows */
+.window-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-windows);
+  pointer-events: none;
+}
+.snap-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-snap-preview);
+  pointer-events: none;
+}
+.snap-preview {
+  background: color-mix(in oklab, var(--c-paper) 10%, transparent);
+}
+.zoom-layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-window-animation);
+  pointer-events: none;
+}
+.zoom-rect {
+  position: fixed;
+  opacity: 0;
+  outline-style: solid;
+}
+
+.window {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 3);
+  pointer-events: auto;
+  outline: none;
+}
+.window.is-hidden {
+  visibility: hidden;
+}
+.window:focus-visible {
+  outline: var(--u) dashed var(--focus);
+  outline-offset: var(--u);
+}
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  min-block-size: calc(var(--u) * 20);
+  padding: 0 calc(var(--u) * 2) 0 calc(var(--u) * 4);
+  background: var(--title-idle-bg);
+  color: var(--title-idle-fg);
+  touch-action: none;
+  cursor: default;
+}
+.window.is-focused .window-titlebar,
+.dialog-titlebar {
+  background: var(--title-bg);
+  color: var(--title-fg);
+}
+.window-title {
+  flex: 1;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-size: var(--ui-font-size);
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.window-controls {
+  display: flex;
+  gap: calc(var(--u) * 2);
+}
+.window-control {
+  display: grid;
+  inline-size: calc(var(--u) * 16);
+  block-size: calc(var(--u) * 16);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: var(--face);
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-hi),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-lo);
+}
+.window-control:active {
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-lo),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-hi);
+}
+.window-body {
+  position: relative;
+  flex: 1;
+  min-block-size: 0;
+  margin-block-start: calc(var(--u) * 3);
+  overflow: auto;
+  color: var(--text);
+  font-family: var(--ff-read);
+  font-size: var(--text-read);
+  line-height: 1.55;
+}
+@media (pointer: coarse) {
+  .window-titlebar {
+    min-block-size: calc(var(--u) * 28);
+  }
+  .window-control {
+    inline-size: calc(var(--u) * 24);
+    block-size: calc(var(--u) * 24);
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  touch-action: none;
+}
+.resize-n,
+.resize-s {
+  inset-inline: calc(var(--u) * 8);
+  block-size: calc(var(--u) * 4);
+  cursor: ns-resize;
+}
+.resize-n {
+  inset-block-start: calc(var(--u) * -2);
+}
+.resize-s {
+  inset-block-end: calc(var(--u) * -2);
+}
+.resize-e,
+.resize-w {
+  inset-block: calc(var(--u) * 8);
+  inline-size: calc(var(--u) * 4);
+  cursor: ew-resize;
+}
+.resize-e {
+  inset-inline-end: calc(var(--u) * -2);
+}
+.resize-w {
+  inset-inline-start: calc(var(--u) * -2);
+}
+.resize-ne,
+.resize-nw,
+.resize-se,
+.resize-sw {
+  inline-size: calc(var(--u) * 10);
+  block-size: calc(var(--u) * 10);
+}
+.resize-ne {
+  inset-block-start: calc(var(--u) * -3);
+  inset-inline-end: calc(var(--u) * -3);
+  cursor: nesw-resize;
+}
+.resize-sw {
+  inset-block-end: calc(var(--u) * -3);
+  inset-inline-start: calc(var(--u) * -3);
+  cursor: nesw-resize;
+}
+.resize-nw {
+  inset-block-start: calc(var(--u) * -3);
+  inset-inline-start: calc(var(--u) * -3);
+  cursor: nwse-resize;
+}
+.resize-se {
+  inset-block-end: calc(var(--u) * -3);
+  inset-inline-end: calc(var(--u) * -3);
+  cursor: nwse-resize;
+}
+
+/* Taskbar */
+.taskbar {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: var(--z-taskbar);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  min-block-size: max(calc(var(--u) * 32), 32px);
+  padding: calc(var(--u) * 4) max(calc(var(--u) * 4), env(safe-area-inset-right))
+    max(calc(var(--u) * 4), env(safe-area-inset-bottom))
+    max(calc(var(--u) * 4), env(safe-area-inset-left));
+}
+@media (pointer: coarse) {
+  .taskbar {
+    min-block-size: 44px;
+  }
+}
+.taskbar-start,
+.taskbar-window,
+.tray-button {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  block-size: calc(var(--u) * 22);
+  padding: 0 calc(var(--u) * 6);
+  border: 0;
+  background: var(--face);
+  color: var(--text);
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-hi),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-lo);
+}
+.taskbar-start {
+  flex: none;
+}
+.taskbar-start .brand-mark {
+  inline-size: calc(var(--u) * 16);
+  block-size: calc(var(--u) * 16);
+}
+.taskbar-start.is-pressed,
+.taskbar-window.is-pressed,
+.tray-button[aria-pressed='true'],
+.taskbar-start:active,
+.taskbar-window:active,
+.tray-button:active {
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-lo),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--face-hi);
+}
+.taskbar-window.is-pressed {
+  background: var(--well);
+}
+.taskbar-windows {
+  display: flex;
+  flex: 1;
+  min-inline-size: 0;
+  gap: calc(var(--u) * 4);
+  overflow: hidden;
+}
+.taskbar-windows li {
+  min-inline-size: 0;
+}
+.taskbar-window {
+  max-inline-size: calc(var(--u) * 160);
+}
+.taskbar-window-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tray {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  padding: 0 calc(var(--u) * 4);
+  block-size: calc(var(--u) * 22);
+  box-shadow:
+    inset var(--u) var(--u) 0 0 var(--face-lo),
+    inset calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--face-hi);
+}
+.tray-button {
+  padding: 0 calc(var(--u) * 3);
+  block-size: calc(var(--u) * 18);
+}
+.tray-availability {
+  display: inline-flex;
+  padding: calc(var(--u) * 2);
+}
+/* The only coloured dot in the UI: a real state, with its label for assistive tech. */
+.availability-dot {
+  inline-size: calc(var(--u) * 7);
+  block-size: calc(var(--u) * 7);
+  background: var(--face);
+  box-shadow: inset 0 0 0 var(--u) var(--edge);
+}
+.availability-dot[data-available='true'] {
+  background: var(--accent);
+}
+.tray-clock {
+  padding-inline: calc(var(--u) * 2);
+}
+.brand-ink {
+  fill: currentColor;
+}
+.brand-accent {
+  fill: var(--accent);
+}
+.brand-mark {
+  display: block;
+  flex: none;
+}
+.brand-mark-2 {
+  inline-size: calc(var(--u) * 32);
+  block-size: calc(var(--u) * 32);
+}
+.brand-mark-4 {
+  inline-size: calc(var(--u) * 64);
+  block-size: calc(var(--u) * 64);
+}
+
+/* Menus: appear in two steps. */
+@keyframes step-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.menu {
+  z-index: var(--z-menu);
+  min-inline-size: calc(var(--u) * 180);
+  padding: calc(var(--u) * 3);
+  animation: step-in 80ms steps(2, jump-end);
+}
+.menu-floating {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  visibility: hidden;
+}
+.start-menu {
+  position: absolute;
+  inset-inline-start: calc(var(--u) * 4);
+  inset-block-end: calc(var(--u) * 34);
+}
+.start-header {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  margin-block-end: calc(var(--u) * 3);
+  padding: calc(var(--u) * 6);
+  background: var(--title-bg);
+  color: var(--title-fg);
+}
+.start-name,
+.start-role {
+  max-inline-size: calc(var(--u) * 150);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.menu-list {
+  display: flex;
+  flex-direction: column;
+}
+.menu-separator {
+  margin-block-start: calc(var(--u) * 3);
+  padding-block-start: calc(var(--u) * 3);
+  box-shadow: inset 0 var(--u) 0 0 var(--face-lo);
+}
+.menu-item {
+  display: flex;
+  inline-size: 100%;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  padding: calc(var(--u) * 3) calc(var(--u) * 6);
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: start;
+  white-space: nowrap;
+}
+.menu-item:focus,
+.menu-item:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+  outline: none;
+}
+@media (pointer: coarse) {
+  .menu-item {
+    min-block-size: 44px;
+  }
+}
+
+/* Dialogs (native <dialog>, blocking) */
+.os-dialog {
+  inline-size: min(calc(var(--u) * 360), calc(100vw - var(--u) * 16));
+  margin: auto;
+  padding: calc(var(--u) * 3);
+  border: 0;
+  color: var(--text);
+  font-family: var(--ff-pixel);
+  font-size: var(--ui-font-size);
+  line-height: calc(var(--u) * 14);
+  animation: step-in 80ms steps(2, jump-end);
+}
+.os-dialog::backdrop {
+  background: color-mix(in oklab, var(--c-ink) 40%, transparent);
+}
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 8);
+  margin-block-start: calc(var(--u) * 3);
+  padding: calc(var(--u) * 12);
+  background: var(--well);
+  box-shadow:
+    inset var(--u) var(--u) 0 0 var(--face-lo),
+    inset calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--face-hi);
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 8) calc(var(--u) * 4) calc(var(--u) * 4);
+}
+.run-dialog {
+  inline-size: min(calc(var(--u) * 420), calc(100vw - var(--u) * 16));
+  margin-block-start: 12vh;
+}
+.run-body {
+  gap: calc(var(--u) * 4);
+}
+.field-label {
+  display: block;
+}
+.px-field {
+  inline-size: 100%;
+  padding: calc(var(--u) * 4) calc(var(--u) * 6);
+  border: 0;
+  background: var(--well);
+  color: var(--text);
+  font: inherit;
+  box-shadow:
+    inset 0 0 0 var(--u) var(--edge),
+    inset calc(var(--u) * 2) calc(var(--u) * 2) 0 0 var(--face-lo);
+}
+.run-results {
+  max-block-size: calc(var(--u) * 220);
+  overflow: auto;
+}
+.run-result {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+  padding: calc(var(--u) * 3) calc(var(--u) * 4);
+  cursor: default;
+}
+.run-result.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.run-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.run-kind {
+  color: var(--text-muted);
+}
+.run-result.is-active .run-kind {
+  color: var(--on-accent);
+}
+.run-hint,
+.run-empty {
+  color: var(--text-muted);
+}
+
+/* Shutdown */
+.shutdown {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-shutdown);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 16);
+  padding: calc(var(--u) * 16);
+  background: var(--c-ink);
+  color: var(--text);
+  text-align: center;
+}
+.shutdown.is-animated {
+  animation: step-in 280ms steps(7, jump-end);
+}
+
+/* Apps shared */
+.skeleton {
+  display: grid;
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 12);
+}
+.skeleton > span {
+  display: block;
+  background: var(--face);
+}
+.skeleton-line {
+  block-size: calc(var(--u) * 10);
+}
+.skeleton-line:nth-child(3n) {
+  inline-size: 60%;
+}
+.skeleton-field {
+  block-size: calc(var(--u) * 24);
+}
+.skeleton-grid {
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--u) * 72), 1fr));
+}
+.skeleton-tile {
+  aspect-ratio: 1;
+}
+.skeleton-split {
+  grid-template-columns: calc(var(--u) * 120) 1fr;
+  block-size: 100%;
+}
+.skeleton-canvas {
+  block-size: calc(var(--u) * 200);
+}
+.app-error,
+.app-soon {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 12);
+  padding: calc(var(--u) * 16);
+}
+
+.app-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 10);
+  padding: calc(var(--u) * 12) calc(var(--u) * 16);
+}
+.welcome-id {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 12);
+}
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 6);
+}
+.welcome-hint {
+  color: var(--text-muted);
+}
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--u) * 6);
+}
+.checkbox input {
+  inline-size: calc(var(--u) * 12);
+  block-size: calc(var(--u) * 12);
+  accent-color: var(--accent);
+}

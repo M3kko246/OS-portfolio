@@ -19,8 +19,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "lighthouse": "tsx scripts/lighthouse.ts",
+    "budgets": "tsx scripts/check-budgets.ts",
     "tokens": "tsx scripts/build-tokens.ts",
     "fonts": "tsx scripts/subset-fonts.ts",
+    "sprites": "tsx scripts/build-sprites.ts",
     "verify": "pnpm check && pnpm lint && pnpm format:check && pnpm test && pnpm build"
   },
   "dependencies": {
@@ -29,7 +31,8 @@
     "astro": "7.3.5",
     "pixelarticons": "2.4.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "zustand": "5.0.15"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

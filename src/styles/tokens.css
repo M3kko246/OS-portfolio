@@ -18,6 +18,19 @@
   --c-brick: #b5443a;
   --c-plum: #6a3e6e;
 
+  /* Layers from src/os/kernel/layers.ts: the only z-index values in the project. */
+  --z-wallpaper: 0;
+  --z-icons: 10;
+  --z-windows: 20;
+  --z-snap-preview: 30;
+  --z-taskbar: 50;
+  --z-window-animation: 55;
+  --z-menu: 60;
+  --z-toast: 70;
+  --z-crt: 80;
+  --z-shutdown: 90;
+  --z-boot: 100;
+
   /* One art pixel in CSS px; refined at runtime by the OS from the exact devicePixelRatio. */
   --u: 1px;
   --ui-font-size: calc(var(--u) * 11);

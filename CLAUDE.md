@@ -35,6 +35,19 @@ file records conventions, commands and decisions so every session starts aligned
   system tokens exist as utilities.
 - `art/` holds sources that are never served as they are (fonts, sprites, brand).
 - `tests/` Vitest, `e2e/` Playwright.
+- `src/os/` is the React island (`client:only`), mounted by `src/pages/index.astro` under the
+  static boot screen:
+  - `kernel/`: pure logic and stores. `geometry.ts` (art-pixel rects, snapping, resize),
+    `windows.ts` (window manager store, invariants tested), `icons.ts` (desktop grid),
+    `url.ts` (deep links), `vfs.ts` (virtual file system shared by Explorer, Terminal, Esegui),
+    `settings.ts` / `session.ts` (persisted, versioned, safe storage), `shell.ts` (menus and
+    dialogs), `launcher.ts` (open/close with opener tracking for animation and focus return),
+    `layers.ts` (every z-index, emitted as `--z-*` in tokens.css).
+  - `shell/`: Boot, Desktop, Window(Layer), Taskbar, Menus, RunDialog, Dialogs, AppFrame.
+  - `apps/`: `registry.ts` (manifests, lazy components created at module level),
+    one folder per app.
+  - `ui/`: primitives (Glyph, Sprite, BrandMark), Menu, Skeleton. `lib/`: pixel scale, motion,
+    i18n hook, announcer, zoom rectangles.
 
 ## Decisions
 
@@ -76,3 +89,12 @@ file records conventions, commands and decisions so every session starts aligned
 - Social images: `src/lib/og.ts` (Satori + resvg) with the static font subsets in
   `src/assets/fonts/og`. Favicons are endpoints generated from the brand grid.
 - `SITE_URL` sets `site` (canonical URLs, sitemap, social images); defaults to example.com.
+- OS geometry is in art pixels (integers); CSS px = art px × `--u`. Windows render in creation
+  order (stable DOM, focus and iframes survive) and stack by their index in `order`.
+- Gestures (window drag/resize, icon drag, marquee) write styles through refs in rAF and commit
+  to the store on pointerup: no React state per pointer move.
+- Desktop icons are 32x32 sprites drawn by `scripts/build-sprites.ts` (pnpm sprites), shown at
+  32u with `image-rendering: pixelated`. UI glyphs come only from pixelarticons (12u).
+- Stepped motion: WAAPI/CSS `steps()`, 40 ms per step; `data-motion="reduced"` on the root turns
+  every animation off (system preference or Settings).
+- Budget: `pnpm budgets` measures the initial JS of `/` (gzip, static imports followed).

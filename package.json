@@ -26,12 +26,14 @@
     "verify": "pnpm check && pnpm lint && pnpm format:check && pnpm test && pnpm build"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "14.3.3",
     "@astrojs/react": "7.0.0",
     "@astrojs/sitemap": "3.7.4",
     "astro": "7.3.5",
     "pixelarticons": "2.4.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "resend": "6.28.1",
     "zustand": "5.0.15"
   },
   "devDependencies": {
@@ -64,6 +66,7 @@
     "tsx": "4.23.15",
     "typescript": "6.0.3",
     "typescript-eslint": "8.70.1",
-    "vitest": "5.0.1"
+    "vitest": "5.0.1",
+    "wrangler": "4.137.0"
   }
 }

@@ -24,7 +24,13 @@ import type { OsIndex } from './types';
 function useSystemEffects() {
   const theme = useSettings((s) => s.theme);
   const scale = useSettings((s) => s.scale);
+  const cursor = useSettings((s) => s.pixelCursor);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (cursor) document.documentElement.dataset.cursor = 'pixel';
+    else delete document.documentElement.dataset.cursor;
+  }, [cursor]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -105,6 +111,7 @@ function useSystemEffects() {
 export default function OS({ data }: { data: OsIndex }) {
   const t = useT();
   const startOpen = useShell((s) => s.startOpen);
+  const crt = useSettings((s) => s.crt);
 
   useEffect(() => {
     setLauncherIndex(data);
@@ -136,6 +143,7 @@ export default function OS({ data }: { data: OsIndex }) {
         <AboutDialog />
         <Shutdown />
         <div ref={registerZoomLayer} className="zoom-layer" aria-hidden="true" />
+        {crt && <div className="crt" aria-hidden="true" />}
         <div ref={registerAnnouncer} className="sr-only" aria-live="polite" />
         <Boot onDone={onBooted} />
       </div>

@@ -34,5 +34,5 @@ Ogni voce qui corrisponde a un segnaposto `[DA COMPILARE]` nel sito o nel codice
 
 - [ ] Dominio: impostare `SITE_URL` sull'hosting (oggi URL canonici, sitemap e immagini social puntano a `https://example.com`)
 - [ ] Hosting: proposta Cloudflare, da confermare
-- [ ] Account Resend e chiave API (da inserire solo nelle variabili d'ambiente dell'hosting)
+- [ ] Account Resend e chiave API: `wrangler secret put RESEND_API_KEY`, poi `CONTACT_TO` (la tua email) e, con un dominio verificato, `CONTACT_FROM`. Fino ad allora il modulo Contatti risponde "L'invio dal sito non è ancora attivo" e propone email e `mailto:`
 - [ ] Repository GitHub remoto per far girare la CI

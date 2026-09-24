@@ -98,3 +98,14 @@ file records conventions, commands and decisions so every session starts aligned
 - Stepped motion: WAAPI/CSS `steps()`, 40 ms per step; `data-motion="reduced"` on the root turns
   every animation off (system preference or Settings).
 - Budget: `pnpm budgets` measures the initial JS of `/` (gzip, static imports followed).
+- Hosting: Cloudflare Workers via `@astrojs/cloudflare` (`prerenderEnvironment: 'node'` because
+  build-time pages use fs, sharp and Satori; `imageService: 'compile'` for build-time images).
+  Build output is `dist/client` (static) + `dist/server`; `astro preview` runs workerd.
+  `build.format: 'file'` serves `/classica` without trailing-slash redirects.
+- `/api/contact` is the only on-demand route: Zod validation shared with the client rules in
+  `src/lib/contact.ts`, honeypot + minimum fill time, rate limiting through the
+  `CONTACT_LIMITER` binding (wrangler.jsonc), Resend with secrets from `astro:env`.
+- Data endpoints for the OS: `/data/projects/[slug].json` (case study HTML from
+  `entry.rendered.html`) and `/data/photos.json` (tiny, medium, full variants).
+- Vitest uses a plain config (not getViteConfig): the adapter would run tests in workerd.
+- Each app imports its own CSS (`explorer.css`, `photos.css`, shared `apps.css`).

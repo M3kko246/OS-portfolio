@@ -5,6 +5,7 @@ dist/
 .env
 .env.*
 !.env.example
+.dev.vars
 playwright-report/
 test-results/
 blob-report/

@@ -1,5 +1,6 @@
 allowBuilds:
   esbuild: true
+  workerd: true
 minimumReleaseAgeExclude:
   - '@eslint-react/ast@5.20.8'
   - '@eslint-react/core@5.20.8'
@@ -15,3 +16,4 @@ minimumReleaseAgeExclude:
   - eslint-plugin-react-rsc@5.20.8
   - eslint-plugin-react-web-api@5.20.8
   - eslint-plugin-react-x@5.20.8
+  - wrangler@4.137.0

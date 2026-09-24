@@ -185,6 +185,42 @@ const sprites: Record<string, () => Sprite> = {
 const outDir = new URL('../src/assets/sprites/', import.meta.url);
 await mkdir(outDir, { recursive: true });
 
+// Pixel cursor (Settings > Cursore pixel): drawn at 1x, hotspot at (1, 1).
+const CURSOR = [
+  '#         ',
+  '##        ',
+  '#.#       ',
+  '#..#      ',
+  '#...#     ',
+  '#....#    ',
+  '#.....#   ',
+  '#......#  ',
+  '#.......# ',
+  '#........#',
+  '#.....####',
+  '#..#..#   ',
+  '#.# #..#  ',
+  '##  #..#  ',
+  '#    #..# ',
+  '     #..# ',
+  '      ##  ',
+];
+{
+  const w = 12;
+  const h = CURSOR.length + 1;
+  const rgba = Buffer.alloc(w * h * 4);
+  CURSOR.forEach((row, y) => {
+    Array.from({ length: row.length }, (_, x) => row.charAt(x)).forEach((ch, x) => {
+      if (ch === ' ') return;
+      const [r, g, b] = hexToRgb(ch === '#' ? palette.ink : palette.paper);
+      rgba.set([r * 255, g * 255, b * 255, 255].map(Math.round), ((y + 1) * w + x + 1) * 4);
+    });
+  });
+  await sharp(rgba, { raw: { width: w, height: h, channels: 4 } })
+    .png()
+    .toFile(new URL('cursor.png', outDir).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
+}
+
 const rendered: [string, Buffer][] = [];
 for (const [name, draw] of Object.entries(sprites)) {
   const png = await sharp(draw().rgba(), { raw: { width: S, height: S, channels: 4 } })

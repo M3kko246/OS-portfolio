@@ -26,7 +26,7 @@ export interface Settings {
 
 export const defaultSettings: Settings = {
   theme: 'auto',
-  wallpaper: 'auto',
+  wallpaper: 'solid-night',
   sound: false,
   volume: 0.6,
   scale: 'auto',
@@ -59,12 +59,17 @@ export const settingsStore = createStore<SettingsStore>()(
     }),
     {
       name: SETTINGS_KEY,
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => safeStorage),
       partialize: (state) =>
         Object.fromEntries(keys.map((key) => [key, state[key]])) as unknown as Settings,
       // Unknown or missing fields from older versions fall back to the defaults.
-      migrate: (persisted) => ({ ...defaultSettings, ...(persisted as Partial<Settings>) }),
+      migrate: (persisted, version) => {
+        const settings = { ...defaultSettings, ...(persisted as Partial<Settings>) };
+        // v1 stored 'auto' before the time-of-day wallpapers existed.
+        if (version < 2 && settings.wallpaper === 'auto') settings.wallpaper = 'solid-night';
+        return settings;
+      },
     },
   ),
 );

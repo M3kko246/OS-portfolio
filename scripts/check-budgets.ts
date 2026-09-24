@@ -3,11 +3,15 @@
  * `/` loads before any interaction (entry scripts and islands plus their static imports), and,
  * from T4, the Carriera bundle loaded on demand.
  */
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 
-const dist = join(process.cwd(), 'dist');
+// With the Cloudflare adapter static files live in dist/client.
+const dist = existsSync(join(process.cwd(), 'dist', 'client'))
+  ? join(process.cwd(), 'dist', 'client')
+  : join(process.cwd(), 'dist');
 const BUDGET_INITIAL = 180 * 1024;
 
 const STATIC_IMPORT = /(?:import|export)\s*(?:[\w*{}\s,$]*from\s*)?["'](\.{1,2}\/[^"']+\.js)["']/g;

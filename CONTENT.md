@@ -28,7 +28,7 @@ Ogni progetto è un file in `src/content/projects/`. Il nome del file diventa l'
    - `island`: aspetto dell'isola nel gioco. `biome` può essere `meadow`, `sand`, `rock` o `grove`; `landmark` può essere `lighthouse`, `tower`, `workshop`, `observatory`, `windmill` o `dock`;
    - `order`: posizione nella rotta del gioco, 1 per il progetto più vecchio;
    - `featured: true` per metterlo in evidenza, `draft: true` per nasconderlo online.
-4. Sotto la seconda riga `---` scrivi il caso studio completo in Markdown, usando titoli `##`.
+4. Sotto la seconda riga `---` scrivi il caso studio completo in Markdown, usando titoli `##`. Le immagini mettile nel campo `gallery`, non dentro il testo: il Lettore del sistema mostra il testo, la galleria la mostrano la scheda progetto e l'app Foto.
 
 ## Esperienze e formazione
 

@@ -72,9 +72,9 @@
 }
 .desktop-icon-label {
   display: -webkit-box;
-  max-inline-size: calc(var(--u) * 76);
+  max-inline-size: calc(var(--u) * 80);
   overflow: hidden;
-  padding: 0 calc(var(--u) * 2);
+  padding: 0 var(--u);
   color: var(--c-paper);
   text-align: center;
   text-shadow:
@@ -215,6 +215,7 @@
 }
 .window-body {
   position: relative;
+  container-type: inline-size;
   flex: 1;
   min-block-size: 0;
   margin-block-start: calc(var(--u) * 3);
@@ -626,6 +627,45 @@
 .skeleton-canvas {
   block-size: calc(var(--u) * 200);
 }
+.app-state {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 12);
+  padding: calc(var(--u) * 16);
+}
+.app-state p {
+  max-inline-size: 68ch;
+}
+
+/* CRT effect (off by default): scanlines and a soft vignette on a fixed, inert layer. */
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-crt);
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--u) * 2),
+      color-mix(in oklab, var(--c-ink) 18%, transparent) calc(var(--u) * 2) calc(var(--u) * 3)
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 60%,
+      color-mix(in oklab, var(--c-ink) 45%, transparent)
+    );
+}
+
+/* Pixel cursor (off by default, never on touch screens): CSS only, no element follows the mouse. */
+@media (pointer: fine) {
+  :root[data-cursor='pixel'],
+  :root[data-cursor='pixel'] * {
+    cursor:
+      url('../assets/sprites/cursor.png') 1 1,
+      auto;
+  }
+}
+
 .app-error,
 .app-soon {
   display: flex;

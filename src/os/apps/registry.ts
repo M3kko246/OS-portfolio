@@ -13,7 +13,7 @@ import { User } from 'pixelarticons/react/User';
 import type { AppId } from './ids';
 import type { AppManifest, AppProps } from './manifest';
 
-// Apps that arrive in later stages show ComingSoon (see the T2 stage report).
+// Carriera (T4), Terminale and Cestino (T5) show ComingSoon until their stage.
 const comingSoon = () => import('./ComingSoon');
 const bySlug = (params: Readonly<Record<string, string>>) => params.slug;
 
@@ -52,7 +52,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 400, h: 280 },
     handheld: 'fullscreen',
     skeleton: 'grid',
-    load: comingSoon,
+    load: () => import('./explorer/Explorer'),
   },
   project: {
     id: 'project',
@@ -64,7 +64,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 380, h: 300 },
     handheld: 'fullscreen',
     skeleton: 'document',
-    load: comingSoon,
+    load: () => import('./project/Project'),
     instanceKey: bySlug,
   },
   reader: {
@@ -77,7 +77,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 360, h: 300 },
     handheld: 'fullscreen',
     skeleton: 'document',
-    load: comingSoon,
+    load: () => import('./reader/Reader'),
     instanceKey: bySlug,
   },
   demo: {
@@ -90,7 +90,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 400, h: 300 },
     handheld: 'fullscreen',
     skeleton: 'canvas',
-    load: comingSoon,
+    load: () => import('./demo/Demo'),
     instanceKey: bySlug,
   },
   photos: {
@@ -103,7 +103,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 380, h: 300 },
     handheld: 'fullscreen',
     skeleton: 'grid',
-    load: comingSoon,
+    load: () => import('./photos/Photos'),
   },
   about: {
     id: 'about',
@@ -115,7 +115,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 380, h: 320 },
     handheld: 'fullscreen',
     skeleton: 'split',
-    load: comingSoon,
+    load: () => import('./about/About'),
   },
   cv: {
     id: 'cv',
@@ -127,7 +127,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 360, h: 320 },
     handheld: 'fullscreen',
     skeleton: 'document',
-    load: comingSoon,
+    load: () => import('./cv/Cv'),
   },
   mail: {
     id: 'mail',
@@ -139,7 +139,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 360, h: 380 },
     handheld: 'fullscreen',
     skeleton: 'form',
-    load: comingSoon,
+    load: () => import('./mail/Mail'),
   },
   terminal: {
     id: 'terminal',
@@ -163,7 +163,7 @@ export const manifests: Record<AppId, AppManifest> = {
     minSize: { w: 360, h: 320 },
     handheld: 'fullscreen',
     skeleton: 'form',
-    load: comingSoon,
+    load: () => import('./settings/Settings'),
   },
   trash: {
     id: 'trash',

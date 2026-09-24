@@ -139,3 +139,10 @@ file records conventions, commands and decisions so every session starts aligned
   480x270 canvas scaled by CSS: whole-number scale, lights on exact art pixels, and a canvas is
   never the LCP element (an <img> wallpaper pushed LCP on / to 3.9 s).
 - Reduced motion freezes water and windmill: wallpaper renders are byte-identical run to run.
+- Handheld mode (`src/os/handheld`): `kernel/mode.ts` decides (Settings `mode`, or auto below
+  768 px). Same window store and apps; the top window shows full screen. Each open app pushes a
+  history entry (`useBackButton`), so the phone's Back closes it; closing from inside calls
+  history.back() and ignores its own popstate. In handheld mode the desktop URL sync is off.
+- Touch in Carriera: `hud/Touch.tsx` writes an analog `input.stick` (dead zone, clamp) read by
+  `engine.step`; the knob moves through a ref. Pinch zoom lives on the container. Touch UI shows
+  on coarse pointers, in handheld mode, or after the first touch.

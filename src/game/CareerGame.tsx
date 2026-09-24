@@ -17,6 +17,7 @@ import type { AppId } from '@/os/apps/ids';
 import { useOsIndex } from '@/os/context';
 import { openApp, openExternal } from '@/os/kernel/launcher';
 import { useSession } from '@/os/kernel/session';
+import { isHandheld } from '@/os/kernel/mode';
 import { useSettings } from '@/os/kernel/settings';
 import { useShell } from '@/os/kernel/shell';
 import { useT, type Translate } from '@/os/lib/i18n';
@@ -26,10 +27,11 @@ import { GameEngine } from './engine';
 import { PerfProbe } from './fx/PerfProbe';
 import { PixelPipeline } from './fx/PixelPipeline';
 import { Hud, type HudActions } from './hud/Hud';
+import { TouchControls } from './hud/Touch';
 import { applyKey, releaseAll } from './logic/input';
 import { layoutWorld, NEXT, PORTO, toWorld, type WorldLayout } from './logic/layout';
 import { Player } from './player/Player';
-import { gameStore, type Interactable } from './store';
+import { gameStore, useGame, type Interactable } from './store';
 import { MaterialKit } from './world/materials';
 import { World } from './world/World';
 
@@ -154,6 +156,16 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
   const [autoLow, setAutoLow] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [paused, setPaused] = useState(false);
+  // Touch controls show on coarse pointers and in handheld mode, or from the first touch.
+  const [touch, setTouch] = useState(
+    () => window.matchMedia('(pointer: coarse)').matches || isHandheld(),
+  );
+  const pinchRef = useRef({
+    points: new Map<number, { x: number; y: number }>(),
+    base: 0,
+    used: false,
+  });
+  const prompt = useGame((s) => s.prompt);
   // Lost WebGL context: the fallback shows until the browser restores it, then the canvas is rebuilt.
   const [lost, setLost] = useState(false);
   const [canvasKey, setCanvasKey] = useState(0);
@@ -262,7 +274,40 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
     else if (event.code === 'KeyC') engine.rotate(1);
   };
 
+  // Two fingers on the world zoom in steps; a pinch never counts as a tap to walk.
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'touch') return;
+    if (!touch) setTouch(true);
+    if (!(event.target instanceof HTMLCanvasElement)) return;
+    const pinch = pinchRef.current;
+    pinch.points.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pinch.points.size === 2) {
+      const [a, b] = [...pinch.points.values()];
+      pinch.base = a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+      pinch.used = true;
+    }
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const pinch = pinchRef.current;
+    if (!pinch.points.has(event.pointerId)) return;
+    pinch.points.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const [a, b] = [...pinch.points.values()];
+    if (pinch.points.size !== 2 || !a || !b || pinch.base === 0) return;
+    const ratio = Math.hypot(a.x - b.x, a.y - b.y) / pinch.base;
+    if (ratio > 1.25 || ratio < 0.8) {
+      engine.zoomBy(ratio > 1 ? 1 : -1);
+      pinch.base = Math.hypot(a.x - b.x, a.y - b.y);
+    }
+  };
+
   const onPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const pinch = pinchRef.current;
+    pinch.points.delete(event.pointerId);
+    if (pinch.used) {
+      if (pinch.points.size === 0) pinch.used = false;
+      return;
+    }
     const state = threeRef.current;
     if (!state || event.button !== 0 || gameStore.getState().paused) return;
     if (!(event.target instanceof HTMLCanvasElement)) return;
@@ -294,6 +339,7 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
     <div
       ref={containerRef}
       className="career"
+      data-touch={touch ? '' : undefined}
       // eslint-disable-next-line jsx-a11y-x/no-noninteractive-tabindex
       tabIndex={0}
       role="application"
@@ -305,7 +351,12 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
       onBlur={() => {
         releaseAll(engine.input);
       }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      onPointerCancel={(e) => {
+        pinchRef.current.points.delete(e.pointerId);
+      }}
       onWheel={(e) => {
         engine.zoomBy(e.deltaY > 0 ? -1 : 1);
       }}
@@ -373,12 +424,23 @@ export default function CareerGame({ island: targetSlug, minimized, onExit }: Ca
           </p>
         </div>
       )}
+      {touch && (
+        <TouchControls
+          engine={engine}
+          actionLabel={prompt ? t('career.openNamed', { name: prompt.label }) : t('career.jump')}
+          onAction={() => {
+            if (gameStore.getState().prompt) interact();
+            else engine.jump();
+          }}
+        />
+      )}
       <Hud
         islands={layout.islands}
         projects={index.projects}
         visited={visitedCount}
         currentIsland={currentIsland}
         fullscreen={fullscreen}
+        touch={touch}
         actions={actions}
       />
     </div>

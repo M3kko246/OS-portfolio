@@ -51,7 +51,15 @@ export function useEffectiveWallpaper(): Exclude<WallpaperId, 'auto'> {
   return setting === 'auto' ? time : setting;
 }
 
-function ArtCanvas({ time, lit }: { time: TimeOfDay; lit: readonly string[] }) {
+function ArtCanvas({
+  time,
+  lit,
+  fit,
+}: {
+  time: TimeOfDay;
+  lit: readonly string[];
+  fit: 'contain' | 'cover';
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewport = useSyncExternalStore(subscribeViewport, viewportKey, () => '');
   const { width, height } = wallpapers;
@@ -86,7 +94,12 @@ function ArtCanvas({ time, lit }: { time: TimeOfDay; lit: readonly string[] }) {
   const [w = 0, h = 0, dpr = 1] = viewport.split(' ').map(Number);
   const deviceW = w * dpr;
   const deviceH = h * dpr;
-  const scale = Math.max(1, Math.floor(Math.min(deviceW / width, deviceH / height)));
+  const scale = Math.max(
+    1,
+    fit === 'cover'
+      ? Math.ceil(Math.max(deviceW / width, deviceH / height))
+      : Math.floor(Math.min(deviceW / width, deviceH / height)),
+  );
   const left = Math.round((deviceW - width * scale) / 2) / dpr;
   const top = Math.round((deviceH - height * scale) / 2) / dpr;
 
@@ -107,7 +120,8 @@ function ArtCanvas({ time, lit }: { time: TimeOfDay; lit: readonly string[] }) {
   );
 }
 
-export function Wallpaper() {
+/** `cover` fills a phone screen, cropping the sides; `contain` shows the whole archipelago. */
+export function Wallpaper({ fit = 'contain' }: { fit?: 'contain' | 'cover' }) {
   const wallpaper = useEffectiveWallpaper();
   const visited = useSession((s) => s.visitedIslands);
 
@@ -127,7 +141,7 @@ export function Wallpaper() {
       aria-hidden="true"
       style={{ backgroundColor: wallpapers.sea[wallpaper] }}
     >
-      <ArtCanvas time={wallpaper} lit={visited} />
+      <ArtCanvas time={wallpaper} lit={visited} fit={fit} />
     </div>
   );
 }

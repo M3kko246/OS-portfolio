@@ -11,7 +11,7 @@ import { useT } from '@/os/lib/i18n';
 import { playSound } from '@/os/lib/sound';
 import { BrandMark, cx, Glyph } from '@/os/ui/primitives';
 
-function Clock() {
+export function Clock() {
   const t = useT();
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {

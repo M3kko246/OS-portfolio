@@ -33,6 +33,7 @@ export class GameEngine {
   private stuck = 0;
   private lastPrompt = '';
   private lastIsland = -1;
+  private jumpQueued = false;
 
   constructor(
     private readonly layout: WorldLayout,
@@ -55,6 +56,11 @@ export class GameEngine {
 
   rotate(direction: 1 | -1): void {
     this.yaw = (this.yaw + direction + 4) % 4;
+  }
+
+  /** One jump, from a button rather than a held key. */
+  jump(): void {
+    this.jumpQueued = true;
   }
 
   zoomBy(direction: 1 | -1): void {
@@ -101,6 +107,10 @@ export class GameEngine {
     let dz = (keys.up ? basis.forward[2] : 0) - (keys.down ? basis.forward[2] : 0);
     dx += (keys.right ? basis.right[0] : 0) - (keys.left ? basis.right[0] : 0);
     dz += (keys.right ? basis.right[2] : 0) - (keys.left ? basis.right[2] : 0);
+    // The joystick adds an analog push: a light touch walks slowly, the rim runs.
+    const push = Math.hypot(keys.stick.x, keys.stick.y);
+    dx += basis.forward[0] * keys.stick.y + basis.right[0] * keys.stick.x;
+    dz += basis.forward[2] * keys.stick.y + basis.right[2] * keys.stick.x;
 
     let speed = 0;
     if (dx !== 0 || dz !== 0) {
@@ -108,7 +118,9 @@ export class GameEngine {
       const l = Math.hypot(dx, dz);
       dx /= l;
       dz /= l;
-      speed = keys.run ? RUN : WALK;
+      const keyboard = keys.up || keys.down || keys.left || keys.right;
+      if (keys.run || (!keyboard && push > 0.92)) speed = RUN;
+      else speed = keyboard ? WALK : WALK * Math.max(0.4, push);
     } else if (this.route.length > 0) {
       const next = this.route[0] as Vec2;
       const tx = next.x - s.position.x;
@@ -144,7 +156,8 @@ export class GameEngine {
     }
 
     // Jump: visual only, gravity on y, squash and stretch on landing.
-    if (keys.jump && s.y === 0 && s.vy === 0) s.vy = 5.2;
+    if ((keys.jump || this.jumpQueued) && s.y === 0 && s.vy === 0) s.vy = 5.2;
+    this.jumpQueued = false;
     if (s.y > 0 || s.vy !== 0) {
       s.vy -= 18 * dt;
       s.y += s.vy * dt;

@@ -65,6 +65,7 @@ export function Hud({
   visited,
   currentIsland,
   fullscreen,
+  touch,
   actions,
 }: {
   islands: IslandSpec[];
@@ -72,6 +73,8 @@ export function Hud({
   visited: number;
   currentIsland: number;
   fullscreen: boolean;
+  /** Touch screens: the hint explains the joystick, the prompt becomes the action button. */
+  touch: boolean;
   actions: HudActions;
 }) {
   const t = useT();
@@ -156,11 +159,13 @@ export function Hud({
         </button>
       </div>
 
-      {hint && <p className="hud-hint">{t('career.hint')}</p>}
+      {hint && <p className="hud-hint">{t(touch ? 'career.hintTouch' : 'career.hint')}</p>}
 
       <div className="hud-prompt" aria-live="polite">
         {prompt?.kind === 'next' && <p className="hud-sign">{t('career.nextSign')}</p>}
-        {prompt ? <p>{t('career.prompt', { name: prompt.label })}</p> : null}
+        {prompt ? (
+          <p>{t(touch ? 'career.promptTouch' : 'career.prompt', { name: prompt.label })}</p>
+        ) : null}
       </div>
 
       <div className="hud-rotate">

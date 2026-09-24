@@ -226,6 +226,15 @@ export default function Settings({ params }: AppProps) {
         ]}
       />
       <Radios
+        setting="mode"
+        legend={t('settings.mode')}
+        choices={[
+          ['auto', 'settings.mode.auto'],
+          ['desktop', 'settings.mode.desktop'],
+          ['handheld', 'settings.mode.handheld'],
+        ]}
+      />
+      <Radios
         setting="quality"
         legend={t('settings.quality')}
         choices={[

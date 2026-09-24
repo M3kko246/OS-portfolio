@@ -1,7 +1,9 @@
 import '@/styles/os.css';
 import { useCallback, useEffect } from 'react';
+import { Handheld } from './handheld/Handheld';
 import { watchAchievements } from './kernel/achievements';
 import { setLauncherIndex, openApp } from './kernel/launcher';
+import { isHandheld, useHandheld } from './kernel/mode';
 import { sessionStore } from './kernel/session';
 import { settingsStore, useSettings } from './kernel/settings';
 import { shellStore, useShell } from './kernel/shell';
@@ -24,7 +26,7 @@ import { Toasts } from './shell/Toasts';
 import { WindowLayer } from './shell/WindowLayer';
 import type { OsIndex } from './types';
 
-function useSystemEffects() {
+function useSystemEffects(handheld: boolean) {
   const theme = useSettings((s) => s.theme);
   const scale = useSettings((s) => s.scale);
   const cursor = useSettings((s) => s.pixelCursor);
@@ -53,7 +55,8 @@ function useSystemEffects() {
     refreshPixelScale();
   }, [scale]);
 
-  // Work area: the viewport above the taskbar, in art pixels.
+  // Work area: the viewport above the taskbar, in art pixels. Re-measured when the mode
+  // changes, because the taskbar exists only on the desktop.
   useEffect(() => {
     const update = () => {
       const bar = document.querySelector('.taskbar')?.getBoundingClientRect().height ?? 0;
@@ -75,7 +78,7 @@ function useSystemEffects() {
       stop();
       observer.disconnect();
     };
-  }, []);
+  }, [handheld]);
 
   // Ctrl+K or Cmd+K opens Esegui. No other global shortcut: the browser keeps its own.
   useEffect(() => {
@@ -96,7 +99,8 @@ function useSystemEffects() {
   useEffect(
     () =>
       windowStore.subscribe((state, previous) => {
-        if (!shellStore.getState().booted) return;
+        // The handheld shell keeps its own history entries, one per open app.
+        if (!shellStore.getState().booted || isHandheld()) return;
         if (state.focusedId === previous.focusedId && state.windows === previous.windows) return;
         const win = state.focusedId ? state.windows[state.focusedId] : undefined;
         const search = searchFor(win ? { appId: win.appId, params: win.params } : null);
@@ -118,13 +122,14 @@ export default function OS({ data }: { data: OsIndex }) {
   const crt = useSettings((s) => s.crt);
   const booted = useShell((s) => s.booted);
   const shutdown = useShell((s) => s.shutdown);
+  const handheld = useHandheld();
 
   useEffect(() => {
     setLauncherIndex(data);
     sessionStore.getState().registerVisit();
   }, [data]);
 
-  useSystemEffects();
+  useSystemEffects(handheld);
 
   // Achievements that follow from the visit itself start once the boot screen is gone.
   useEffect(() => {
@@ -143,17 +148,23 @@ export default function OS({ data }: { data: OsIndex }) {
 
   return (
     <OsIndexContext value={data}>
-      <div className="os">
+      <div className="os" data-mode={handheld ? 'handheld' : 'desktop'}>
         {/* Switched off, the whole session is inert: only the way back can take focus. */}
         <div className="os-session" inert={shutdown}>
           <a className="skip-link font-pixel text-ui" href="/classica">
             {t('nav.goClassic')}
           </a>
-          <Desktop />
-          <WindowLayer />
-          <Taskbar />
-          {startOpen && <StartMenu />}
-          <DesktopMenu />
+          {handheld ? (
+            <Handheld />
+          ) : (
+            <>
+              <Desktop />
+              <WindowLayer />
+              <Taskbar />
+              {startOpen && <StartMenu />}
+              <DesktopMenu />
+            </>
+          )}
           <RunDialog />
           <AboutDialog />
           <Toasts />

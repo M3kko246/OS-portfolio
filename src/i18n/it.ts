@@ -407,6 +407,20 @@ export const it = {
   'term.notFound': "{cmd}: comando sconosciuto. Scrivi help per l'elenco.",
   'term.sudo': 'Permesso negato.',
 
+  'career.jump': 'Salta',
+  'career.openNamed': 'Apri {name}',
+  'career.promptTouch': '{name}: tocca Apri, in basso a destra',
+  'career.hintTouch':
+    'Trascina il riquadro in basso a sinistra per camminare, tocca un punto per andarci, avvicina o allontana due dita per lo zoom. Con il telefono in orizzontale vedi più isole.',
+  'handheld.status': 'Barra di stato',
+  'handheld.home': 'Applicazioni',
+  'handheld.dock': 'Applicazioni principali',
+  'handheld.back': 'Indietro',
+  'settings.mode': 'Modalità',
+  'settings.mode.auto': 'Auto',
+  'settings.mode.desktop': 'Scrivania',
+  'settings.mode.handheld': 'Palmare',
+
   'meta.classicDescription':
     'Tutto il portfolio in una sola pagina: progetti, percorso e contatti.',
 } as const;

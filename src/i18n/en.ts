@@ -408,5 +408,19 @@ export const en: Messages = {
   'term.notFound': '{cmd}: unknown command. Type help for the list.',
   'term.sudo': 'Permission denied.',
 
+  'career.jump': 'Jump',
+  'career.openNamed': 'Open {name}',
+  'career.promptTouch': '{name}: tap Open, bottom right',
+  'career.hintTouch':
+    'Drag the pad at the bottom left to walk, tap a spot to go there, pinch with two fingers to zoom. Turn the phone sideways to see more islands.',
+  'handheld.status': 'Status bar',
+  'handheld.home': 'Apps',
+  'handheld.dock': 'Main apps',
+  'handheld.back': 'Back',
+  'settings.mode': 'Mode',
+  'settings.mode.auto': 'Auto',
+  'settings.mode.desktop': 'Desktop',
+  'settings.mode.handheld': 'Handheld',
+
   'meta.classicDescription': 'The whole portfolio on one page: projects, path and contacts.',
 };

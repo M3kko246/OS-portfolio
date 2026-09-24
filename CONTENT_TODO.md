@@ -31,6 +31,15 @@ Ogni voce qui corrisponde a un segnaposto `[DA COMPILARE]` nel sito o nel codice
 - [ ] Materiale scartato vero per il Cestino: una vecchia versione del tuo logo al posto di `logo_v1_definitivo.png` (oggi è una bozza del marchio segnaposto, `src/data/trash.ts`)
 - [ ] Dopo aver messo i progetti veri: `pnpm wallpapers` per ridisegnare gli sfondi con le isole giuste
 
+## Prove sui dispositivi reali (T6)
+
+Gli e2e girano su un telefono emulato. Serve una prova vera, da annotare qui con data e modello:
+
+- [ ] iOS Safari: schermata iniziale, dock, app a tutto schermo, tasto Indietro (gesto da bordo sinistro), aree sicure con notch e barra Home
+- [ ] Chrome Android: le stesse voci, più il tasto Indietro di sistema
+- [ ] Carriera su entrambi: joystick, pulsante Apri o Salta, tocco per camminare, pizzico per lo zoom, fps con `?debug=perf` (obiettivo 30 su un Android medio)
+- [ ] Suoni attivi dalla barra di stato: si sentono dopo il primo tocco
+
 ## Pubblicazione
 
 - [ ] Dominio: impostare `SITE_URL` sull'hosting (oggi URL canonici, sitemap e immagini social puntano a `https://example.com`)

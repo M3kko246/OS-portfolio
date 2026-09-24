@@ -154,7 +154,7 @@ export const manifests: Record<AppId, AppManifest> = {
   settings: {
     id: 'settings',
     titleKey: 'app.settings',
-    icon: 'readme',
+    icon: 'settings',
     glyph: SettingsCog,
     singleton: true,
     defaultRect: { w: 520, h: 460 },

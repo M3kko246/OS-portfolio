@@ -83,6 +83,25 @@ function page(s: Sprite, body: PaletteName): Sprite {
 }
 
 const sprites: Record<string, () => Sprite> = {
+  settings: () => {
+    // A gear: eight square teeth around a ring with a hole.
+    const s = new Sprite();
+    for (const [x, y] of [
+      [14, 3],
+      [14, 25],
+      [3, 14],
+      [25, 14],
+      [6, 6],
+      [22, 6],
+      [6, 22],
+      [22, 22],
+    ] as const)
+      s.rect(x, y, 4, 4, 'slate');
+    s.ellipse(16, 16, 10.5, 10.5, 'fog');
+    s.ellipse(16, 16, 7.5, 7.5, 'chalk');
+    s.ellipse(16, 16, 4, 4, null);
+    return s.outline();
+  },
   readme: () => {
     const s = page(new Sprite(), 'paper');
     for (const y of [12, 15, 18, 21]) s.hline(10, y, y === 21 ? 7 : 11, 'slate');

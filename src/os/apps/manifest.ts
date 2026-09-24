@@ -4,7 +4,16 @@ import type { Size } from '@/os/kernel/geometry';
 import type { AppId, AppParams } from './ids';
 
 export type SpriteId =
-  'readme' | 'career' | 'folder' | 'photos' | 'about' | 'pdf' | 'mail' | 'terminal' | 'trash';
+  | 'readme'
+  | 'career'
+  | 'folder'
+  | 'photos'
+  | 'about'
+  | 'pdf'
+  | 'mail'
+  | 'terminal'
+  | 'trash'
+  | 'settings';
 
 export type Glyph = (props: SVGProps<SVGSVGElement>) => JSX.Element;
 

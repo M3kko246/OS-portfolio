@@ -242,3 +242,61 @@
   background: var(--c-sun);
   transform-origin: left center;
 }
+
+/* Touch controls: joystick bottom left, action button bottom right, clear of the safe areas. */
+.career {
+  touch-action: none;
+}
+.touch-joystick {
+  position: absolute;
+  inset-block-end: max(calc(var(--u) * 12), env(safe-area-inset-bottom));
+  inset-inline-start: max(calc(var(--u) * 12), env(safe-area-inset-left));
+  display: grid;
+  place-items: center;
+  inline-size: max(calc(var(--u) * 84), 104px);
+  block-size: max(calc(var(--u) * 84), 104px);
+  background: color-mix(in oklab, var(--c-ink) 55%, transparent);
+  box-shadow:
+    inset 0 0 0 var(--u) var(--c-ink),
+    inset 0 0 0 calc(var(--u) * 2) var(--c-paper);
+  touch-action: none;
+}
+.touch-knob {
+  inline-size: 40%;
+  block-size: 40%;
+  background: var(--c-paper);
+  box-shadow:
+    inset 0 0 0 var(--u) var(--c-ink),
+    inset calc(var(--u) * -2) calc(var(--u) * -2) 0 0 var(--c-chalk);
+  pointer-events: none;
+}
+.touch-action {
+  position: absolute;
+  inset-block-end: max(calc(var(--u) * 12), env(safe-area-inset-bottom));
+  inset-inline-end: max(calc(var(--u) * 12), env(safe-area-inset-right));
+  min-inline-size: 64px;
+  min-block-size: 56px;
+}
+.career[data-touch] .hud-hint {
+  inset-block-end: calc(max(calc(var(--u) * 84), 104px) + var(--u) * 20);
+}
+.career[data-touch] .hud-rotate {
+  inset-block-end: calc(56px + var(--u) * 20);
+}
+/* On touch the action button already says what E would open: the prompt text is for screen
+   readers only, and the prompt area clears the joystick. */
+.career[data-touch] .hud-prompt {
+  inset-block-end: calc(max(calc(var(--u) * 84), 104px) + var(--u) * 24);
+}
+.career[data-touch] .hud-prompt > p:not(.hud-sign) {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.touch-action {
+  max-inline-size: 45%;
+  white-space: normal;
+}

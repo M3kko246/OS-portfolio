@@ -82,6 +82,9 @@ export const COMMANDS = [
 
 export type Command = (typeof COMMANDS)[number];
 
+/** English names for the commands that have Italian ones. */
+const ALIASES: Record<string, Command> = { projects: 'progetti', contacts: 'contatti' };
+
 /** Apps that need parameters (a project, a document) cannot be opened by name. */
 const OPENABLE: AppId[] = [
   'welcome',
@@ -197,7 +200,7 @@ export function execute(input: string, state: ShellState, ctx: ShellContext): Re
   if (line === '') return done([]);
 
   const [name = '', ...args] = tokenize(line);
-  const command = name.toLowerCase();
+  const command = ALIASES[name.toLowerCase()] ?? name.toLowerCase();
   const arg = args.join(' ');
   const { t } = ctx;
 
@@ -402,7 +405,9 @@ export function complete(input: string, state: ShellState, ctx: ShellContext): C
 
   let candidates: string[];
   if (command === undefined) {
-    candidates = COMMANDS.filter((c) => c.startsWith(word.toLowerCase()));
+    candidates = [...COMMANDS, ...Object.keys(ALIASES)].filter((c) =>
+      c.startsWith(word.toLowerCase()),
+    );
   } else if (command === 'theme') {
     candidates = ['giorno', 'notte', 'auto'].filter((c) => c.startsWith(word.toLowerCase()));
   } else if (command === 'lang') {

@@ -22,6 +22,7 @@ const strict: Record<Category, number> = {
 const targets: { path: string; min: Partial<Record<Category, number>> }[] = [
   { path: '/', min: { performance: 0.85, accessibility: 0.95 } },
   { path: '/classica', min: strict },
+  { path: '/en/classic', min: strict },
   { path: '/progetti/progetto-1', min: strict },
 ];
 

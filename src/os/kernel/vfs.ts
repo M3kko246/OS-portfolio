@@ -27,18 +27,37 @@ export type VNode = FolderNode | FileNode;
 
 const open = (appId: AppId, params: Record<string, string> = {}) => ({ open: { appId, params } });
 
+/** File and folder names in each language: realistic names, never translated half way. */
+export const vfsNames = {
+  it: {
+    readme: 'Leggimi.txt',
+    caseStudy: 'Leggimi.md',
+    projects: 'progetti',
+    photos: 'foto',
+    code: 'codice.url',
+  },
+  en: {
+    readme: 'Readme.txt',
+    caseStudy: 'Readme.md',
+    projects: 'projects',
+    photos: 'photos',
+    code: 'code.url',
+  },
+} as const;
+
 /**
- * The virtual file system, generated from the content. Explorer, Terminal and Esegui all read
- * this one tree.
+ * The virtual file system, generated from the content in the index's language. Explorer,
+ * Terminal and Esegui all read this one tree.
  */
 export function buildVfs(index: OsIndex): FolderNode {
+  const names = vfsNames[index.lang];
   const projects: FolderNode[] = [...index.projects]
     .sort((a, b) => a.order - b.order)
     .map((p) => {
       const children: VNode[] = [
         {
           kind: 'file',
-          name: 'Leggimi.md',
+          name: names.caseStudy,
           icon: 'readme',
           action: open('reader', { slug: p.slug }),
           text: `# ${p.title}\n${p.tagline}\n\n${p.summary}`,
@@ -56,7 +75,7 @@ export function buildVfs(index: OsIndex): FolderNode {
       if (p.gallery.length > 0) {
         children.push({
           kind: 'folder',
-          name: 'foto',
+          name: names.photos,
           icon: 'photos',
           children: [],
           action: open('photos', { project: p.slug }),
@@ -65,7 +84,7 @@ export function buildVfs(index: OsIndex): FolderNode {
       if (p.links.repo) {
         children.push({
           kind: 'shortcut',
-          name: 'codice.url',
+          name: names.code,
           icon: 'link',
           action: { href: p.links.repo },
           text: `[InternetShortcut]\nURL=${p.links.repo}`,
@@ -95,7 +114,7 @@ export function buildVfs(index: OsIndex): FolderNode {
     children: [
       {
         kind: 'file',
-        name: 'Leggimi.txt',
+        name: names.readme,
         icon: 'readme',
         action: open('welcome'),
         text: `# ${index.profile.name}\n${index.profile.role}\n\n${index.profile.bioShort}`,
@@ -103,12 +122,18 @@ export function buildVfs(index: OsIndex): FolderNode {
       { kind: 'file', name: 'CV.pdf', icon: 'pdf', action: open('cv') },
       {
         kind: 'folder',
-        name: 'progetti',
+        name: names.projects,
         icon: 'folder',
         children: projects,
         action: open('explorer'),
       },
-      { kind: 'folder', name: 'foto', icon: 'photos', children: albums, action: open('photos') },
+      {
+        kind: 'folder',
+        name: names.photos,
+        icon: 'photos',
+        children: albums,
+        action: open('photos'),
+      },
     ],
   };
 }

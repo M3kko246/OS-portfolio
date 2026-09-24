@@ -18,9 +18,29 @@ export const profileSchema = z.object({
   socials: z.array(z.object({ label: z.string(), url: z.url() })),
   cv: z.object({ it: z.string().startsWith('/cv/'), en: z.string().startsWith('/cv/').optional() }),
   skills: z.array(z.object({ area: z.string(), items: z.array(z.string()).min(1) })).min(1),
+  /** English texts; each missing field falls back to Italian (PROMPT.md §3.11). */
+  en: z
+    .object({
+      role: z.string().optional(),
+      bioShort: z
+        .string()
+        .refine((s) => wordCount(s) <= 20, { error: 'Short bio: 20 words at most' })
+        .optional(),
+      bioLong: z
+        .string()
+        .refine((s) => wordCount(s) <= 120, { error: 'Long bio: 120 words at most' })
+        .optional(),
+      availability: z.string().optional(),
+      languages: z.array(z.object({ name: z.string(), level: z.string() })).optional(),
+      skills: z.array(z.object({ area: z.string(), items: z.array(z.string()).min(1) })).optional(),
+    })
+    .optional(),
 });
 
 export type Profile = z.infer<typeof profileSchema>;
+
+/** The profile in one language, as pages and the OS show it. */
+export type LocalProfile = Omit<Profile, 'en'>;
 
 /** Every placeholder is marked [DA COMPILARE] and listed in CONTENT_TODO.md. */
 export const profile: Profile = profileSchema.parse({
@@ -41,4 +61,16 @@ export const profile: Profile = profileSchema.parse({
     { area: 'Area di competenza [DA COMPILARE]', items: ['Competenza [DA COMPILARE]'] },
     { area: 'Seconda area [DA COMPILARE]', items: ['Competenza [DA COMPILARE]'] },
   ],
+  en: {
+    role: 'Role [DA COMPILARE]',
+    bioShort: 'One sentence on what you do and for whom, twenty words at most. [DA COMPILARE]',
+    bioLong:
+      'Who you are, what you do best, how you work and which projects you are looking for. Write in the first person, with plain sentences and concrete verbs, one hundred and twenty words at most. [DA COMPILARE]',
+    availability: 'Available for new projects [DA COMPILARE]',
+    languages: [{ name: 'Language [DA COMPILARE]', level: 'Level [DA COMPILARE]' }],
+    skills: [
+      { area: 'Skill area [DA COMPILARE]', items: ['Skill [DA COMPILARE]'] },
+      { area: 'Second area [DA COMPILARE]', items: ['Skill [DA COMPILARE]'] },
+    ],
+  },
 });

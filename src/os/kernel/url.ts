@@ -1,3 +1,5 @@
+import type { Lang } from '@/i18n';
+import { paths } from '@/lib/paths';
 import { isAppId, type AppId, type AppParams } from '@/os/apps/ids';
 
 export interface Intent {
@@ -36,6 +38,6 @@ export function searchFor(intent: Intent | null): string {
 }
 
 /** Link shared by `Copia link`: the static page, which carries the social preview. */
-export function projectPageUrl(origin: string, slug: string): string {
-  return new URL(`/progetti/${encodeURIComponent(slug)}`, origin).href;
+export function projectPageUrl(origin: string, slug: string, lang: Lang = 'it'): string {
+  return new URL(paths.project(lang, slug), origin).href;
 }

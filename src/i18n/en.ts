@@ -1,6 +1,6 @@
 import type { Messages } from './index';
 
-/** English UI strings (T7 completes the translation of content and routes). */
+/** English UI strings: the type makes `en` provide every key of `it`. */
 export const en: Messages = {
   'nav.skipToContent': 'Skip to content',
   'nav.goClassic': 'Go to the classic version',
@@ -160,7 +160,7 @@ export const en: Messages = {
   'explorer.kind.file': 'Document',
   'explorer.kind.shortcut': 'Shortcut',
   'explorer.browse': 'Show files',
-  'explorer.items': '{count} items',
+  'explorer.items': 'Items: {count}',
   'explorer.empty': 'This folder is empty.',
   'explorer.notFound': 'This folder no longer exists.',
 
@@ -181,7 +181,7 @@ export const en: Messages = {
   'demo.external': 'This demo opens outside {os}, in a new tab.',
   'demo.frameTitle': '{title} demo',
 
-  'photos.count': '{count} photos',
+  'photos.count': 'Photos: {count}',
   'photos.back': 'All albums',
   'photos.prev': 'Previous photo',
   'photos.next': 'Next photo',
@@ -294,7 +294,7 @@ export const en: Messages = {
   'toast.achievement': 'Achievement: {name}',
   'toast.reward': 'New in Settings: {reward}',
   'achievement.explorer.name': 'Explorer',
-  'achievement.explorer.description': 'You visited every island of Carriera.',
+  'achievement.explorer.description': 'You visited every island in Career.',
   'achievement.curious.name': 'Curious',
   'achievement.curious.description': 'First command in the Terminal.',
   'achievement.archaeologist.name': 'Archaeologist',
@@ -303,8 +303,8 @@ export const en: Messages = {
   'achievement.nightOwl.description': 'A visit at night, after 9 pm.',
   'achievement.veteran.name': 'Veteran',
   'achievement.veteran.description': 'Third visit to this computer.',
-  'reward.hat.captain': "Captain's hat for the Carriera character",
-  'reward.hat.nightcap': 'Nightcap for the Carriera character',
+  'reward.hat.captain': "Captain's hat for the Career character",
+  'reward.hat.nightcap': 'Nightcap for the Career character',
   'reward.terminalTheme.amber': 'Amber theme for the Terminal',
   'reward.terminalTheme.paper': 'Paper theme for the Terminal',
   'reward.wallpaper.drafts': 'Drafts wallpaper',
@@ -350,9 +350,9 @@ export const en: Messages = {
   'term.usage.pwd': 'pwd',
   'term.usage.cat': 'cat <file>',
   'term.usage.open': 'open <app or file>',
-  'term.usage.progetti': 'progetti',
+  'term.usage.progetti': 'projects',
   'term.usage.cv': 'cv',
-  'term.usage.contatti': 'contatti',
+  'term.usage.contatti': 'contacts',
   'term.usage.info': 'info',
   'term.usage.theme': 'theme day|night|auto',
   'term.usage.lang': 'lang it|en',

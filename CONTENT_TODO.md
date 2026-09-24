@@ -40,6 +40,13 @@ Gli e2e girano su un telefono emulato. Serve una prova vera, da annotare qui con
 - [ ] Carriera su entrambi: joystick, pulsante Apri o Salta, tocco per camminare, pizzico per lo zoom, fps con `?debug=perf` (obiettivo 30 su un Android medio)
 - [ ] Suoni attivi dalla barra di stato: si sentono dopo il primo tocco
 
+## Inglese (T7)
+
+- [ ] Testi inglesi dei progetti in `src/content/projects/en/` (oggi sono segnaposto tradotti)
+- [ ] Blocco `en` del profilo in `src/data/profile.ts`
+- [ ] Campi `en` di esperienze (`experience.json`) e foto (`photos.json`)
+- [ ] CV in inglese, facoltativo (`cv.en` nel profilo)
+
 ## Pubblicazione
 
 - [ ] Dominio: impostare `SITE_URL` sull'hosting (oggi URL canonici, sitemap e immagini social puntano a `https://example.com`)

@@ -1,3 +1,5 @@
+import { paths } from '@/lib/paths';
+import { settingsStore } from '@/os/kernel/settings';
 import { useId, useMemo, useState, type KeyboardEvent } from 'react';
 import { useOsIndex } from '@/os/context';
 import { appIds, type AppId } from '@/os/apps/ids';
@@ -85,7 +87,7 @@ function buildEntries(index: OsIndex, t: Translate): Entry[] {
       kind: t('run.kind.command'),
       glyph: ExternalLink,
       run: () => {
-        window.location.assign('/classica');
+        window.location.assign(paths.classic(settingsStore.getState().lang));
       },
     },
     {

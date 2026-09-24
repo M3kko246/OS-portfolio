@@ -1,8 +1,12 @@
 ---
 import Icon from '@/components/Icon.astro';
-import { profile } from '@/data/profile';
 import { t } from '@/i18n';
 import Base from '@/layouts/Base.astro';
+import { localProfile } from '@/lib/localize';
+import { paths } from '@/lib/paths';
+
+// One page answers every missing address, in both languages.
+const profile = localProfile('it');
 ---
 
 <Base title={`${t('notFound.title')}, ${profile.osName}`} description={t('notFound.body')} noindex>
@@ -16,14 +20,20 @@ import Base from '@/layouts/Base.astro';
             {t('notFound.title')}
           </h1>
           <p class="text-read max-w-[46ch]">{t('notFound.body')}</p>
+          <p class="text-read max-w-[46ch]" lang="en">
+            {t('notFound.title', {}, 'en')}. {t('notFound.body', {}, 'en')}
+          </p>
         </div>
       </div>
       <p class="flex flex-wrap justify-end gap-8 px-12 pb-12">
-        <a class="px-btn px-btn-primary" href="/">
+        <a class="px-btn px-btn-primary" href={paths.home('it')}>
           {t('action.backToDesktop')}
         </a>
-        <a class="px-btn" href="/classica">
+        <a class="px-btn" href={paths.classic('it')}>
           {t('nav.classic')}
+        </a>
+        <a class="px-btn" href={paths.home('en')} lang="en">
+          {t('action.backToDesktop', {}, 'en')}
         </a>
       </p>
     </section>

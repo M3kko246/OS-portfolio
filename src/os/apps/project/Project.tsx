@@ -10,7 +10,7 @@ import { ErrorState } from '@/os/ui/States';
 
 export default function Project({ params }: AppProps) {
   const t = useT();
-  const { projects } = useOsIndex();
+  const { projects, lang } = useOsIndex();
   const project = projects.find((p) => p.slug === params.slug);
   const [copyStatus, setCopyStatus] = useState('');
 
@@ -42,7 +42,7 @@ export default function Project({ params }: AppProps) {
   const { repo } = project.links;
 
   const copyLink = () => {
-    const url = projectPageUrl(window.location.origin, project.slug);
+    const url = projectPageUrl(window.location.origin, project.slug, lang);
     navigator.clipboard.writeText(url).then(
       () => {
         setCopyStatus(t('project.linkCopied'));

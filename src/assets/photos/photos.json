@@ -7,19 +7,34 @@
         {
           "file": "foto-1.png",
           "alt": "Segnaposto: isola con un faro in pieno giorno, disegnata nella palette del sistema",
-          "caption": "Foto segnaposto [DA COMPILARE]"
+          "caption": "Foto segnaposto [DA COMPILARE]",
+          "en": {
+            "alt": "Placeholder: island with a lighthouse in full daylight, drawn in the system palette",
+            "caption": "Placeholder photo [DA COMPILARE]"
+          }
         },
         {
           "file": "foto-2.png",
           "alt": "Segnaposto: isola con un mulino al tramonto, disegnata nella palette del sistema",
-          "caption": "Foto segnaposto [DA COMPILARE]"
+          "caption": "Foto segnaposto [DA COMPILARE]",
+          "en": {
+            "alt": "Placeholder: island with a windmill at sunset, drawn in the system palette",
+            "caption": "Placeholder photo [DA COMPILARE]"
+          }
         },
         {
           "file": "foto-3.png",
           "alt": "Segnaposto: isola con un osservatorio di notte, disegnata nella palette del sistema",
-          "caption": "Foto segnaposto [DA COMPILARE]"
+          "caption": "Foto segnaposto [DA COMPILARE]",
+          "en": {
+            "alt": "Placeholder: island with an observatory at night, drawn in the system palette",
+            "caption": "Placeholder photo [DA COMPILARE]"
+          }
         }
-      ]
+      ],
+      "en": {
+        "title": "Placeholder album [DA COMPILARE]"
+      }
     }
   ]
 }

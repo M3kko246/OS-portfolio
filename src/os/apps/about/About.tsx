@@ -8,7 +8,7 @@ import { BrandMark } from '@/os/ui/primitives';
 
 export default function About() {
   const t = useT();
-  const { profile, experience } = useOsIndex();
+  const { profile, experience, lang } = useOsIndex();
   const groups = [
     { title: t('path.work'), items: experience.filter((e) => e.kind === 'work') },
     { title: t('path.education'), items: experience.filter((e) => e.kind === 'education') },
@@ -86,7 +86,7 @@ export default function About() {
                           <li key={entry.id}>
                             <h4 className="font-bold">{entry.title}</h4>
                             <p className="about-meta">
-                              {entry.org} · {formatPeriod(entry.start, entry.end)}
+                              {entry.org} · {formatPeriod(entry.start, entry.end, lang)}
                             </p>
                             <p>{entry.description}</p>
                           </li>

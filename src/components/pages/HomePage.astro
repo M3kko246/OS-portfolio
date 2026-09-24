@@ -1,0 +1,139 @@
+---
+// The system. The static boot screen below is the LCP element and what crawlers and no-JS
+// visitors see (name, role, CV, contact, classic version); the OS takes over from it.
+import wallpapers from '@/assets/wallpapers/wallpapers.json';
+import BrandMark from '@/components/BrandMark.astro';
+import LangLink from '@/components/LangLink.astro';
+import { layoutKey } from '@/game/logic/layout';
+import { t, type Lang } from '@/i18n';
+import Base from '@/layouts/Base.astro';
+import { getProjects, layoutInput } from '@/lib/content';
+import { cvUrl, localProfile, pageTitle, personJsonLd } from '@/lib/localize';
+import { buildOsIndex } from '@/lib/os-index';
+import { alternates, paths } from '@/lib/paths';
+import { photoCount } from '@/lib/photos';
+import OS from '@/os/OS';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const tr = (key: Parameters<typeof t>[0], vars?: Record<string, string | number>) =>
+  t(key, vars, lang);
+const profile = localProfile(lang);
+const projects = await getProjects();
+
+// The wallpapers are rendered from the archipelago: they must show the same islands as the game.
+if (layoutKey(projects.map(layoutInput)) !== wallpapers.key) {
+  const message = 'The desktop wallpapers do not match the projects: run `pnpm wallpapers`.';
+  if (import.meta.env.PROD) throw new Error(message);
+  console.warn(message);
+}
+const site = Astro.site ?? new URL(Astro.url.origin);
+// Both languages travel with the page: switching language inside the system is instant.
+const data = { it: await buildOsIndex('it'), en: await buildOsIndex('en') };
+---
+
+<Base
+  title={pageTitle(lang)}
+  description={profile.bioShort}
+  type="profile"
+  image={lang === 'en' ? '/og/en/home.png' : '/og/home.png'}
+  jsonLd={personJsonLd(lang, site)}
+  lang={lang}
+  alternates={alternates(paths.home)}
+  bodyClass="os-body"
+>
+  <div id="boot" class="boot theme-dark">
+    <a class="boot-classic font-pixel text-ui" href={paths.classic(lang)}>
+      {tr('nav.goClassic')}
+    </a>
+    <main class="boot-main">
+      <div class="boot-id">
+        <BrandMark scale={4} />
+        <div class="flex flex-col gap-4">
+          <h1 class="font-pixel text-ui-3">{profile.name}</h1>
+          <p class="font-pixel text-ui-2">{profile.role}</p>
+        </div>
+      </div>
+      <ul id="boot-log" class="boot-log font-pixel text-ui" role="list">
+        <li>{tr('boot.projectsFound', { count: projects.length })}</li>
+        <li>{tr('boot.photosFound', { count: photoCount })}</li>
+      </ul>
+      <p class="flex flex-wrap gap-8">
+        <a class="px-btn px-btn-primary" href={cvUrl(lang)} download>
+          {tr('action.downloadCv')}
+        </a>
+        <a class="px-btn" href={`mailto:${profile.email}`}>
+          {tr('action.contactMe')}
+        </a>
+      </p>
+      <noscript>
+        <p class="text-read max-w-[68ch]">{tr('boot.noscript')}</p>
+      </noscript>
+      <LangLink
+        class="boot-lang font-pixel text-ui"
+        lang={lang}
+        alternates={alternates(paths.home)}
+      />
+    </main>
+  </div>
+  <OS client:only="react" data={data} lang={lang} />
+</Base>
+
+<style>
+  :global(.os-body) {
+    overflow: hidden;
+    background: var(--c-night);
+  }
+  /* The boot screen is ink in every theme: `.theme-dark` pins the dark tokens. */
+  .boot {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-boot);
+    overflow: auto;
+    background: var(--c-ink);
+    color: var(--text);
+  }
+  .boot-main {
+    display: flex;
+    min-block-size: 100dvh;
+    flex-direction: column;
+    justify-content: center;
+    gap: calc(var(--u) * 24);
+    padding: calc(var(--u) * 24) max(calc(var(--u) * 16), env(safe-area-inset-left))
+      calc(var(--u) * 48);
+    margin-inline: auto;
+    max-inline-size: 72rem;
+  }
+  .boot-id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--u) * 16);
+  }
+  .boot-log {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--u) * 2);
+  }
+  .boot-log :global(li)::before {
+    content: '> ';
+    color: var(--c-sun);
+  }
+  .boot-lang {
+    color: var(--c-paper);
+    text-decoration: underline;
+    text-underline-offset: calc(var(--u) * 2);
+    align-self: flex-start;
+  }
+  .boot-classic {
+    position: fixed;
+    inset-block-end: max(calc(var(--u) * 16), env(safe-area-inset-bottom));
+    inset-inline-start: max(calc(var(--u) * 16), env(safe-area-inset-left));
+    color: var(--c-paper);
+    text-decoration: underline;
+    text-underline-offset: calc(var(--u) * 2);
+  }
+</style>

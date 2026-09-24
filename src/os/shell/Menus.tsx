@@ -1,3 +1,5 @@
+import { paths } from '@/lib/paths';
+import { settingsStore } from '@/os/kernel/settings';
 import { Download } from 'pixelarticons/react/Download';
 import { ExternalLink } from 'pixelarticons/react/ExternalLink';
 import { InfoBox } from 'pixelarticons/react/InfoBox';
@@ -59,7 +61,7 @@ export function StartMenu() {
       label: t('nav.classic'),
       glyph: ExternalLink,
       onSelect: () => {
-        window.location.assign('/classica');
+        window.location.assign(paths.classic(settingsStore.getState().lang));
       },
     },
     {

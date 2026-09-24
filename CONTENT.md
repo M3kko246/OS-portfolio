@@ -55,6 +55,15 @@ Sostituisci `public/cv/CV.pdf` con il tuo CV. Per aggiungere la versione inglese
 
 Il Cestino mostra materiale scartato vero. I file sono elencati in `src/data/trash.ts`: per ognuno servono nome, tipo (`image` o `text`) e una nota. Le immagini vanno in `src/assets/trash/`, con un testo alternativo. Oggi contiene una bozza del marchio segnaposto (da sostituire con un tuo vecchio logo), il primo render dello sfondo senza palette e un elenco di idee scartate durante la costruzione del sito.
 
+## Inglese
+
+La versione inglese vive sotto `/en`. Ogni testo inglese è facoltativo: se manca, la pagina mostra quello italiano e lo segnala ai lettori di schermo.
+
+- Progetti: crea `src/content/projects/en/` con lo stesso nome del file italiano (per esempio `app-meteo.md`). In alto puoi tradurre `title`, `tagline`, `summary`, `role`, `client`, `duration`, `team`, `problem`, `approach`, `outcomes`, `coverAlt` e, per la galleria, `gallery` con `alt` e `caption` nello stesso ordine. Sotto, il caso studio in inglese.
+- Profilo: il blocco `en` in `src/data/profile.ts` (ruolo, bio breve e lunga, disponibilità, lingue, competenze). Il CV inglese va in `cv.en`.
+- Esperienze: il campo `en` con `title` e `description` in `src/content/experience.json`.
+- Foto: il campo `en` con `alt` e `caption` per ogni foto, e `en.title` per l'album, in `photos.json`.
+
 ## Regole di scrittura
 
 - Niente lineette lunghe o medie: usa punto, virgola, due punti o parentesi. Un test controlla tutti i testi.

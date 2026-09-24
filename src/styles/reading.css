@@ -52,6 +52,7 @@
     gap: calc(var(--u) * 4) calc(var(--u) * 12);
   }
   .site-bar-nav a,
+  .site-bar-lang,
   .site-footer a {
     text-decoration: underline;
     text-underline-offset: calc(var(--u) * 2);

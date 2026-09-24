@@ -1,0 +1,18 @@
+---
+import type { Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  alternates: Record<Lang, string>;
+  class?: string;
+}
+
+/** Link to the same page in the other language, named in that language. */
+const { lang, alternates, class: className } = Astro.props;
+const other: Lang = lang === 'it' ? 'en' : 'it';
+const names: Record<Lang, string> = { it: 'Italiano', en: 'English' };
+---
+
+<a class={className} href={alternates[other]} hreflang={other} lang={other}>
+  {names[other]}
+</a>

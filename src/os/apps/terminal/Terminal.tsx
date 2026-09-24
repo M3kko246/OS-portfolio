@@ -7,7 +7,7 @@ import { useOsIndex } from '@/os/context';
 import { unlockAchievement } from '@/os/kernel/achievements';
 import { closeWindow, openApp, openExternal } from '@/os/kernel/launcher';
 import { settingsStore, useSettings } from '@/os/kernel/settings';
-import { buildVfs, pathString } from '@/os/kernel/vfs';
+import { buildVfs, nodeAt, pathString } from '@/os/kernel/vfs';
 import { windowStore } from '@/os/kernel/windows';
 import { useT } from '@/os/lib/i18n';
 import { playSound } from '@/os/lib/sound';
@@ -55,6 +55,9 @@ export default function Terminal({ windowId }: AppProps) {
     { id: 0, tone: 'out', segments: [{ text: t('term.welcome', { os: index.profile.osName }) }] },
   ]);
   const [shell, setShell] = useState<ShellState>(initialShell);
+  // Folder names follow the language: a path from the other language falls back to home.
+  const current: ShellState =
+    nodeAt(root, shell.cwd)?.kind === 'folder' ? shell : { ...shell, cwd: [] };
   const [value, setValue] = useState('');
   // Position while browsing the history with the arrows; null means a fresh line.
   const [browsing, setBrowsing] = useState<number | null>(null);
@@ -80,15 +83,15 @@ export default function Terminal({ windowId }: AppProps) {
   }, [rows]);
 
   const print = (lines: Line[]) => {
-    setRows((current) => {
+    setRows((shown) => {
       const added = lines.map((line) => ({ ...line, id: nextIdRef.current++ }));
-      return [...current, ...added].slice(-MAX_LINES);
+      return [...shown, ...added].slice(-MAX_LINES);
     });
   };
 
   const echo = (text: string): Line => ({
     tone: 'echo',
-    segments: [{ text: `${promptFor(shell)} ${text}` }],
+    segments: [{ text: `${promptFor(current)} ${text}` }],
   });
 
   const apply = (effect: Effect) => {
@@ -118,7 +121,7 @@ export default function Terminal({ windowId }: AppProps) {
   };
 
   const run = (input: string) => {
-    const result = execute(input, shell, context());
+    const result = execute(input, current, context());
     const cleared = result.effects.some((e) => e.type === 'clear');
     if (!cleared) print([echo(input), ...result.lines]);
     setShell(result.state);
@@ -128,11 +131,11 @@ export default function Terminal({ windowId }: AppProps) {
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    const { history } = shell;
+    const { history } = current;
     if (event.key === 'Tab' && !event.shiftKey && value.trim() !== '') {
       // Completion only while typing: on an empty line Tab still moves focus out.
       event.preventDefault();
-      const result = complete(value, shell, context());
+      const result = complete(value, current, context());
       setValue(result.input);
       if (result.options.length > 0) {
         print([echo(value), { tone: 'out', segments: [{ text: result.options.join('  ') }] }]);
@@ -215,8 +218,8 @@ export default function Terminal({ windowId }: AppProps) {
           }}
         >
           <label htmlFor={inputId} className="terminal-prompt">
-            <span aria-hidden="true">{promptFor(shell)}</span>
-            <span className="sr-only">{t('term.input', { path: pathString(shell.cwd) })}</span>
+            <span aria-hidden="true">{promptFor(current)}</span>
+            <span className="sr-only">{t('term.input', { path: pathString(current.cwd) })}</span>
           </label>
           <input
             ref={inputRef}

@@ -6,7 +6,9 @@ import { Search } from 'pixelarticons/react/Search';
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { AppProps } from '@/os/apps/manifest';
 import { useT } from '@/os/lib/i18n';
+import { useOsIndex } from '@/os/context';
 import { useResource } from '@/os/lib/resource';
+import { paths } from '@/lib/paths';
 import { Skeleton } from '@/os/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/os/ui/States';
 import { cx, Glyph } from '@/os/ui/primitives';
@@ -171,7 +173,8 @@ function Viewer({ album, start, onClose }: { album: Album; start: number; onClos
 
 export default function Photos({ params }: AppProps) {
   const t = useT();
-  const resource = useResource<{ albums: Album[] }>('/data/photos.json');
+  const { lang } = useOsIndex();
+  const resource = useResource<{ albums: Album[] }>(paths.photosData(lang));
   const initialAlbum = params.project ? `progetto-${params.project}` : params.album;
   const [albumId, setAlbumId] = useState<string | undefined>(initialAlbum);
   const [open, setOpen] = useState<number | null>(null);

@@ -5,6 +5,7 @@ import { announce } from '@/os/lib/announce';
 import { playSound } from '@/os/lib/sound';
 import type { OsIndex } from '@/os/types';
 import { settingsStore } from './settings';
+import { vfsNames } from './vfs';
 import { windowIdFor, windowStore, type WindowId, type WindowState } from './windows';
 
 /**
@@ -23,7 +24,7 @@ export function windowTitle(appId: AppId, params: AppParams): string {
   const lang = settingsStore.getState().lang;
   const project = params.slug ? index?.projects.find((p) => p.slug === params.slug) : undefined;
   if (project && (appId === 'project' || appId === 'demo')) return project.title;
-  if (project && appId === 'reader') return `Leggimi.md, ${project.title}`;
+  if (project && appId === 'reader') return `${vfsNames[lang].caseStudy}, ${project.title}`;
   return t(manifests[appId].titleKey, {}, lang);
 }
 

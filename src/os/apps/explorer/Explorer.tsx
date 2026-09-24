@@ -11,7 +11,7 @@ import type { MessageKey } from '@/i18n';
 import { useOsIndex } from '@/os/context';
 import type { AppProps, Glyph as GlyphComponent, SpriteId } from '@/os/apps/manifest';
 import { openApp, openExternal } from '@/os/kernel/launcher';
-import { buildVfs, nodeAt, type NodeIcon, type VNode } from '@/os/kernel/vfs';
+import { buildVfs, nodeAt, vfsNames, type NodeIcon, type VNode } from '@/os/kernel/vfs';
 import { useT } from '@/os/lib/i18n';
 import { EmptyState, ErrorState } from '@/os/ui/States';
 import { cx, Glyph, Sprite } from '@/os/ui/primitives';
@@ -42,20 +42,31 @@ const GLYPHS: Record<NodeIcon, GlyphComponent> = {
   document: FileText,
 };
 
-const PLACES: { path: string[]; label: MessageKey; glyph: typeof Folder }[] = [
-  { path: [], label: 'explorer.home', glyph: Folder },
-  { path: ['progetti'], label: 'app.explorer', glyph: Folder },
-  { path: ['foto'], label: 'app.photos', glyph: Image },
-];
+function placesFor(lang: keyof typeof vfsNames) {
+  const names = vfsNames[lang];
+  return [
+    { path: [], label: 'explorer.home', glyph: Folder },
+    { path: [names.projects], label: 'app.explorer', glyph: Folder },
+    { path: [names.photos], label: 'app.photos', glyph: Image },
+  ] satisfies { path: string[]; label: MessageKey; glyph: typeof Folder }[];
+}
 
 export default function Explorer({ params }: AppProps) {
   const t = useT();
   const index = useOsIndex();
   const root = useMemo(() => buildVfs(index), [index]);
   const [path, setPath] = useState<string[]>(() =>
-    (params.path ?? 'progetti').split('/').filter(Boolean),
+    (params.path ?? vfsNames[index.lang].projects).split('/').filter(Boolean),
   );
   const [history, setHistory] = useState<string[][]>([]);
+  // Folder names follow the language: switching it starts again from the projects.
+  const [pathLang, setPathLang] = useState(index.lang);
+  if (pathLang !== index.lang) {
+    setPathLang(index.lang);
+    setPath([vfsNames[index.lang].projects]);
+    setHistory([]);
+  }
+  const places = placesFor(index.lang);
   const [view, setView] = useState<View>('icons');
   const [sort, setSort] = useState<Sort>('year');
   const [selected, setSelected] = useState<string | null>(null);
@@ -207,7 +218,7 @@ export default function Explorer({ params }: AppProps) {
       <div className="explorer-main">
         <nav className="explorer-places" aria-label={t('explorer.places')}>
           <ul>
-            {PLACES.map((place) => (
+            {places.map((place) => (
               <li key={place.label}>
                 <button
                   type="button"

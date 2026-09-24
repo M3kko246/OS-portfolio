@@ -1,5 +1,7 @@
 import '@/styles/os.css';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect } from 'react';
+import type { Lang } from '@/i18n';
+import { paths } from '@/lib/paths';
 import { Handheld } from './handheld/Handheld';
 import { watchAchievements } from './kernel/achievements';
 import { setLauncherIndex, openApp } from './kernel/launcher';
@@ -116,8 +118,34 @@ function useSystemEffects(handheld: boolean) {
   );
 }
 
-export default function OS({ data }: { data: OsIndex }) {
+/**
+ * Keeps the language of the page and of the system together: the URL decides on load (/ is
+ * Italian, /en English); switching language in the system then moves the address to match.
+ */
+function useLanguage(pageLang: Lang): Lang {
+  const lang = useSettings((s) => s.lang);
+  useLayoutEffect(() => {
+    settingsStore.getState().set('lang', pageLang);
+  }, [pageLang]);
+  useEffect(
+    () =>
+      settingsStore.subscribe((state, previous) => {
+        if (state.lang === previous.lang) return;
+        document.documentElement.lang = state.lang;
+        const home = paths.home(state.lang);
+        if (window.location.pathname !== home) {
+          window.history.replaceState(window.history.state, '', `${home}${window.location.search}`);
+        }
+      }),
+    [],
+  );
+  return lang;
+}
+
+export default function OS({ data, lang: pageLang }: { data: Record<Lang, OsIndex>; lang: Lang }) {
   const t = useT();
+  const lang = useLanguage(pageLang);
+  const index = data[lang];
   const startOpen = useShell((s) => s.startOpen);
   const crt = useSettings((s) => s.crt);
   const booted = useShell((s) => s.booted);
@@ -125,33 +153,37 @@ export default function OS({ data }: { data: OsIndex }) {
   const handheld = useHandheld();
 
   useEffect(() => {
-    setLauncherIndex(data);
     sessionStore.getState().registerVisit();
-  }, [data]);
+  }, []);
+
+  useEffect(() => {
+    setLauncherIndex(index);
+    document.title = `${index.profile.name}, ${index.profile.role}`;
+  }, [index]);
 
   useSystemEffects(handheld);
 
   // Achievements that follow from the visit itself start once the boot screen is gone.
   useEffect(() => {
     if (!booted) return;
-    return watchAchievements(data.projects.map((p) => p.slug));
-  }, [booted, data]);
+    return watchAchievements(index.projects.map((p) => p.slug));
+  }, [booted, index]);
 
   const onBooted = useCallback(() => {
     shellStore.getState().setBooted();
     playSound('boot');
-    const intent = parseSearch(window.location.search, new Set(data.projects.map((p) => p.slug)));
+    const intent = parseSearch(window.location.search, new Set(index.projects.map((p) => p.slug)));
     if (intent) openApp(intent.appId, intent.params);
     else if (sessionStore.getState().showWelcome) openApp('welcome');
     else document.querySelector<HTMLElement>('[data-desktop-focus]')?.focus();
-  }, [data]);
+  }, [index]);
 
   return (
-    <OsIndexContext value={data}>
+    <OsIndexContext value={index}>
       <div className="os" data-mode={handheld ? 'handheld' : 'desktop'}>
         {/* Switched off, the whole session is inert: only the way back can take focus. */}
         <div className="os-session" inert={shutdown}>
-          <a className="skip-link font-pixel text-ui" href="/classica">
+          <a className="skip-link font-pixel text-ui" href={paths.classic(lang)}>
             {t('nav.goClassic')}
           </a>
           {handheld ? (

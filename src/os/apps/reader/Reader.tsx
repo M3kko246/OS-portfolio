@@ -1,4 +1,6 @@
+import { paths } from '@/lib/paths';
 import type { AppProps } from '@/os/apps/manifest';
+import { useOsIndex } from '@/os/context';
 import { useT } from '@/os/lib/i18n';
 import { useResource } from '@/os/lib/resource';
 import { Skeleton } from '@/os/ui/Skeleton';
@@ -13,8 +15,9 @@ interface CaseStudy {
 export default function Reader({ params }: AppProps) {
   const t = useT();
   const slug = params.slug ?? '';
-  const resource = useResource<CaseStudy>(`/data/projects/${encodeURIComponent(slug)}.json`);
-  const page = `/progetti/${encodeURIComponent(slug)}`;
+  const { lang } = useOsIndex();
+  const resource = useResource<CaseStudy>(paths.projectData(lang, slug));
+  const page = paths.project(lang, slug);
 
   if (resource.status === 'loading') {
     return <Skeleton shape="document" label={t('app.loading', { title: t('app.reader') })} />;

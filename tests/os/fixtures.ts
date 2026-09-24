@@ -29,6 +29,7 @@ export function project(
 }
 
 export const osIndex: OsIndex = {
+  lang: 'it',
   profile: {
     name: 'Nome Cognome',
     firstName: 'Nome',

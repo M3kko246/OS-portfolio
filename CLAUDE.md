@@ -6,7 +6,7 @@ file records conventions, commands and decisions so every session starts aligned
 ## Working rules
 
 - Talk to the user in Italian. Code, file names, identifiers, comments and commits in English.
-  Visible UI text in Italian, from typed dictionaries (English comes in T7).
+  Visible UI text from typed dictionaries: `it` is the source, `en` must have every key.
 - One stage at a time (PROMPT.md §5). A stage ends with `pnpm verify` + `pnpm test:e2e`, a short
   report and one Conventional Commit.
 - Never invent personal data: use `[DA COMPILARE]` and list it in `CONTENT_TODO.md`.
@@ -146,3 +146,16 @@ file records conventions, commands and decisions so every session starts aligned
 - Touch in Carriera: `hud/Touch.tsx` writes an analog `input.stick` (dead zone, clamp) read by
   `engine.step`; the knob moves through a ref. Pinch zoom lives on the container. Touch UI shows
   on coarse pointers, in handheld mode, or after the first touch.
+- Languages: Italian at the root, English under `/en` with English path names
+  (`/en/classic`, `/en/projects/[slug]`); `src/lib/paths.ts` is the one map of pages and data
+  URLs, shared by pages and OS. Page bodies live in `src/components/pages/*` with a `lang` prop;
+  files in `src/pages` only pick the language. `Base.astro` writes hreflang (it, en, x-default),
+  og:locale and a clean canonical (the build sees `.html` because of `build.format: 'file'`).
+- Content translations (`src/lib/localize.ts`): `src/content/projects/en/<same file>.md` for
+  projects (every field optional, the body is the English case study), `en` objects in the
+  profile, experience.json and photos.json. Missing English falls back to Italian and the page
+  marks that block `lang="it"`.
+- The OS page embeds both indexes (`buildOsIndex` in `src/lib/os-index.ts`). The URL picks the
+  language on load; switching it in the system moves the address between `/` and `/en` and
+  updates `<html lang>`. VFS names follow the language (`vfsNames`); Explorer and Terminal
+  fall back to a valid folder after a switch.

@@ -1,8 +1,10 @@
-import type { Profile } from '@/data/profile';
+import type { LocalProfile } from '@/data/profile';
+import type { Lang } from '@/i18n';
 
 /** Everything the OS needs at boot, serialized by index.astro. Heavy details load on demand. */
 export interface OsIndex {
-  profile: Profile;
+  lang: Lang;
+  profile: LocalProfile;
   projects: ProjectSummary[];
   albums: AlbumSummary[];
   experience: ExperienceSummary[];

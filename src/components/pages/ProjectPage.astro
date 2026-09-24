@@ -1,0 +1,193 @@
+---
+import { Picture } from 'astro:assets';
+import { render } from 'astro:content';
+import BrandMark from '@/components/BrandMark.astro';
+import LangLink from '@/components/LangLink.astro';
+import { t, type Lang, type MessageKey } from '@/i18n';
+import Base from '@/layouts/Base.astro';
+import { anchors } from '@/lib/anchors';
+import { localProfile, pageTitle, type LocalProject } from '@/lib/localize';
+import { alternates, paths } from '@/lib/paths';
+
+interface Props {
+  lang: Lang;
+  project: LocalProject;
+}
+
+const { lang, project } = Astro.props;
+const tr = (key: MessageKey, vars?: Record<string, string | number>) => t(key, vars, lang);
+const profile = localProfile(lang);
+const { data } = project;
+const { Content } = await render(project.body);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const url = new URL(paths.project(lang, project.id), site).href;
+const ogImage = `${lang === 'en' ? '/og/en/projects' : '/og/progetti'}/${project.id}.png`;
+const pages = alternates((l) => paths.project(l, project.id));
+const osLink = `${paths.home(lang)}?progetto=${encodeURIComponent(project.id)}`;
+
+const facts = [
+  ['project.year', String(data.year)],
+  ['project.role', data.role],
+  ['project.client', data.client],
+  ['project.duration', data.duration],
+  ['project.team', data.team],
+  ['project.status', tr(`status.${data.status}`)],
+].filter((fact): fact is [MessageKey, string] => fact[1] !== undefined);
+
+const demoUrl = data.demo.kind === 'none' ? undefined : data.demo.url;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: data.title,
+  headline: data.tagline,
+  description: data.summary,
+  dateCreated: String(data.year),
+  url,
+  image: new URL(ogImage, site).href,
+  keywords: data.stack.join(', '),
+  creator: { '@type': 'Person', name: profile.name, jobTitle: profile.role, url: site.href },
+};
+---
+
+<Base
+  title={pageTitle(lang, data.title)}
+  description={data.summary}
+  type="article"
+  image={ogImage}
+  imageAlt={data.title}
+  jsonLd={jsonLd}
+  lang={lang}
+  alternates={pages}
+>
+  <a class="skip-link font-pixel text-ui" href={`#${anchors[lang].content}`}>
+    {tr('nav.skipToContent')}
+  </a>
+  <header class="site-bar">
+    <a
+      class="site-bar-home font-pixel text-ui"
+      href={`${paths.classic(lang)}#${anchors[lang].projects}`}
+    >
+      <BrandMark scale={1} />
+      {tr('nav.allProjects')}
+    </a>
+    <LangLink class="site-bar-lang font-pixel text-ui" lang={lang} alternates={pages} />
+    <a class="px-btn" href={osLink}>
+      {tr('nav.openOs', { os: profile.osName })}
+    </a>
+  </header>
+
+  <main
+    id={anchors[lang].content}
+    class="page"
+    lang={project.lang === lang ? undefined : project.lang}
+  >
+    <header class="flex flex-col gap-4">
+      <h1 class="text-read-xl font-bold">{data.title}</h1>
+      <p class="text-read-lg">{data.tagline}</p>
+    </header>
+
+    <Picture
+      src={data.cover}
+      alt={data.coverAlt}
+      formats={['avif', 'webp']}
+      widths={[480, 960, 1440]}
+      sizes="(min-width: 72rem) 70rem, 100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="cover"
+    />
+
+    <section aria-labelledby="dati">
+      <h2 id="dati" class="sr-only">
+        {tr('project.details')}
+      </h2>
+      <dl class="facts">
+        {facts.map(([key, value]) => (
+          <>
+            <dt>{tr(key)}</dt>
+            <dd>{value}</dd>
+          </>
+        ))}
+      </dl>
+      <ul class="tags font-pixel text-ui mt-8" role="list" aria-label={tr('project.stack')}>
+        {data.stack.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      <p class="mt-12 flex flex-wrap gap-8">
+        {demoUrl && (
+          <a class="px-btn px-btn-primary" href={demoUrl} rel="noopener noreferrer">
+            {tr('action.tryDemo')}
+          </a>
+        )}
+        {data.links.repo && (
+          <a class="px-btn" href={data.links.repo} rel="noopener noreferrer">
+            {tr('action.code')}
+          </a>
+        )}
+        {data.links.live && (
+          <a class="px-btn" href={data.links.live} rel="noopener noreferrer">
+            {tr('action.visitSite')}
+          </a>
+        )}
+      </p>
+    </section>
+
+    <section aria-labelledby="problema">
+      <h2 id="problema">{tr('project.problem')}</h2>
+      <p>{data.problem}</p>
+    </section>
+
+    <section aria-labelledby="approccio">
+      <h2 id="approccio">{tr('project.approach')}</h2>
+      <p>{data.approach}</p>
+    </section>
+
+    {data.outcomes.length > 0 && (
+      <section aria-labelledby="risultati">
+        <h2 id="risultati">{tr('project.outcomes')}</h2>
+        <ul class="outcomes">
+          {data.outcomes.map((o) => (
+            <li>
+              <strong>{o.value}</strong> {o.label}
+              {o.source && <span> ({tr('project.source', { source: o.source })})</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section aria-labelledby="caso-studio" class="prose">
+      <h2 id="caso-studio">{tr('project.caseStudy')}</h2>
+      <Content />
+    </section>
+
+    {data.gallery.length > 0 && (
+      <section aria-labelledby="galleria">
+        <h2 id="galleria">{tr('project.gallery')}</h2>
+        <ul class="gallery" role="list">
+          {data.gallery.map((item) => (
+            <li>
+              <figure>
+                <Picture
+                  src={item.src}
+                  alt={item.alt}
+                  formats={['avif', 'webp']}
+                  widths={[480, 960]}
+                  sizes="(min-width: 48rem) 22rem, 100vw"
+                />
+                {item.caption && <figcaption>{item.caption}</figcaption>}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+
+  <footer class="site-footer font-pixel text-ui">
+    <a href={paths.classic(lang)}>{tr('nav.classic')}</a>
+    <a href={osLink}>{tr('nav.openOs', { os: profile.osName })}</a>
+  </footer>
+</Base>

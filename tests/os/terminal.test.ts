@@ -118,6 +118,11 @@ describe('terminal parser', () => {
     expect(run('lang fr').effects).toEqual([]);
   });
 
+  it('understands the English names of the Italian commands', () => {
+    expect(text(run('projects').lines[0])).toBe('2021  Progetto alfa');
+    expect(run('contacts').lines[0]?.segments[1]?.href).toBe('mailto:nome@example.com');
+  });
+
   it('has the small commands', () => {
     expect(run('clear').effects).toEqual([{ type: 'clear' }]);
     expect(run('exit').effects).toEqual([{ type: 'exit' }]);
@@ -149,7 +154,7 @@ describe('terminal completion', () => {
   it('offers the choices when a prefix is ambiguous', () => {
     const result = complete('c', initialShell, ctx);
     expect(result.input).toBe('c');
-    expect(result.options).toEqual(['cd', 'cat', 'cv', 'contatti', 'clear']);
+    expect(result.options).toEqual(['cd', 'cat', 'cv', 'contatti', 'clear', 'contacts']);
   });
 
   it('completes paths and fixed arguments', () => {

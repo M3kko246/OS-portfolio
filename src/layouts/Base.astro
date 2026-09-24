@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import '@/styles/global.css';
+import type { Lang } from '@/i18n';
 
 interface Props {
   title: string;
@@ -13,6 +14,9 @@ interface Props {
   jsonLd?: object;
   noindex?: boolean;
   bodyClass?: string;
+  lang?: Lang;
+  /** The same page in each language: hreflang links and og:locale alternates. */
+  alternates?: Record<Lang, string>;
 }
 
 const {
@@ -24,21 +28,35 @@ const {
   jsonLd,
   noindex = false,
   bodyClass,
+  lang = 'it',
+  alternates,
 } = Astro.props;
 
 const site = Astro.site ?? new URL(Astro.url.origin);
-const canonical = new URL(Astro.url.pathname, site).href;
+// With build.format 'file' the build sees `/classica.html`: the canonical URL is the clean
+// address that the host serves without redirects, the same one hreflang and the sitemap use.
+const cleanPath = Astro.url.pathname.replace(/\.html$/, '').replace(/(^|\/)index$/, '/') || '/';
+const canonical = new URL(alternates ? alternates[lang] : cleanPath, site).href;
 const imageUrl = new URL(image, site).href;
+const locale = { it: 'it_IT', en: 'en_US' } as const;
+const other: Lang = lang === 'it' ? 'en' : 'it';
 ---
 
 <!doctype html>
-<html lang="it">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {alternates && (
+      <>
+        <link rel="alternate" hreflang="it" href={new URL(alternates.it, site).href} />
+        <link rel="alternate" hreflang="en" href={new URL(alternates.en, site).href} />
+        <link rel="alternate" hreflang="x-default" href={new URL(alternates.it, site).href} />
+      </>
+    )}
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -46,7 +64,8 @@ const imageUrl = new URL(image, site).href;
     <meta name="theme-color" content="#2b2d42" />
 
     <meta property="og:type" content={type} />
-    <meta property="og:locale" content="it_IT" />
+    <meta property="og:locale" content={locale[lang]} />
+    {alternates && <meta property="og:locale:alternate" content={locale[other]} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

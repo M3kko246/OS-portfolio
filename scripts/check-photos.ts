@@ -12,7 +12,13 @@ interface Manifest {
   albums: {
     id: string;
     title: string;
-    photos: { file: string; alt?: string; caption?: string }[];
+    en?: { title?: string };
+    photos: {
+      file: string;
+      alt?: string;
+      caption?: string;
+      en?: { alt?: string; caption?: string };
+    }[];
   }[];
 }
 
@@ -37,7 +43,16 @@ for (const album of manifest.albums) {
     : [];
   for (const photo of album.photos) {
     if (!present.includes(photo.file)) problems.push(`${album.id}/${photo.file}: file not found`);
-    for (const text of [photo.alt, photo.caption, album.title]) {
+    if (photo.en?.alt !== undefined && photo.en.alt.trim().length < 5)
+      problems.push(`${album.id}/${photo.file}: English alt text too short`);
+    for (const text of [
+      photo.alt,
+      photo.caption,
+      album.title,
+      photo.en?.alt,
+      photo.en?.caption,
+      album.en?.title,
+    ]) {
       if (text && FORBIDDEN_DASHES.test(text))
         problems.push(`${album.id}/${photo.file}: en or em dash in text`);
     }

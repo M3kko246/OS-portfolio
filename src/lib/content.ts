@@ -1,7 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { z } from 'astro/zod';
 import testimonialsJson from '@/content/testimonials.json';
-import { profile } from '@/data/profile';
 import type { ProjectInput } from '@/game/logic/layout';
 
 export type Project = CollectionEntry<'projects'>;
@@ -51,21 +50,3 @@ const testimonialSchema = z.array(
 
 /** Optional and usually empty, so it is a validated JSON file rather than a collection. */
 export const testimonials = testimonialSchema.parse(testimonialsJson);
-
-export function pageTitle(prefix?: string): string {
-  const base = `${profile.name}, ${profile.role}`;
-  return prefix ? `${prefix}, ${profile.name}` : base;
-}
-
-export function personJsonLd(site: URL) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.name,
-    jobTitle: profile.role,
-    url: site.href,
-    email: `mailto:${profile.email}`,
-    sameAs: profile.socials.map((s) => s.url),
-    knowsLanguage: profile.languages.map((l) => l.name),
-  };
-}

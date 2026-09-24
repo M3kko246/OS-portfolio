@@ -1,0 +1,280 @@
+---
+// The whole portfolio on one semantic page: no JavaScript, printable, for people in a hurry,
+// screen readers and search engines.
+import { Picture } from 'astro:assets';
+import BrandMark from '@/components/BrandMark.astro';
+import LangLink from '@/components/LangLink.astro';
+import { t, type Lang } from '@/i18n';
+import Base from '@/layouts/Base.astro';
+import { anchors } from '@/lib/anchors';
+import { testimonials } from '@/lib/content';
+import { formatPeriod } from '@/lib/format';
+import {
+  cvUrl,
+  getLocalExperience,
+  getLocalProjects,
+  localProfile,
+  newestFirst,
+  pageTitle,
+  personJsonLd,
+} from '@/lib/localize';
+import { alternates, paths } from '@/lib/paths';
+import { albumsFor } from '@/lib/photos';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const tr = (key: Parameters<typeof t>[0], vars?: Record<string, string | number>) =>
+  t(key, vars, lang);
+const id = anchors[lang];
+const profile = localProfile(lang);
+const projects = newestFirst(await getLocalProjects(lang));
+const experience = await getLocalExperience(lang);
+const albums = albumsFor(lang);
+const groups = [
+  { title: tr('path.work'), items: experience.filter((e) => e.data.kind === 'work') },
+  { title: tr('path.education'), items: experience.filter((e) => e.data.kind === 'education') },
+].filter((group) => group.items.length > 0);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const sections = [
+  [id.about, tr('section.about')],
+  [id.projects, tr('section.projects')],
+  [id.skills, tr('section.skills')],
+  [id.path, tr('section.path')],
+  [id.photos, tr('section.photos')],
+  [id.contact, tr('section.contact')],
+] as const;
+---
+
+<Base
+  title={pageTitle(lang, tr('nav.classic'))}
+  description={tr('meta.classicDescription')}
+  type="profile"
+  image={lang === 'en' ? '/og/en/home.png' : '/og/home.png'}
+  jsonLd={personJsonLd(lang, site)}
+  lang={lang}
+  alternates={alternates(paths.classic)}
+>
+  <a class="skip-link font-pixel text-ui" href={`#${id.content}`}>
+    {tr('nav.skipToContent')}
+  </a>
+  <header class="site-bar">
+    <a class="site-bar-home font-pixel text-ui" href={paths.home(lang)}>
+      <BrandMark scale={1} />
+      {tr('nav.openOs', { os: profile.osName })}
+    </a>
+    <nav aria-label={tr('nav.sections')}>
+      <ul class="site-bar-nav font-pixel text-ui" role="list">
+        {sections.map(([id, label]) => (
+          <li>
+            <a href={`#${id}`}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <LangLink
+      class="site-bar-lang font-pixel text-ui"
+      lang={lang}
+      alternates={alternates(paths.classic)}
+    />
+  </header>
+
+  <main id={id.content} class="classic">
+    <section class="hero" aria-labelledby="nome">
+      <h1 id="nome" class="text-read-xl font-bold">
+        {profile.name}
+      </h1>
+      <p class="text-read-lg">{profile.role}</p>
+      <p class="text-read">{profile.bioShort}</p>
+      <p class="availability font-pixel text-ui">
+        <span
+          class="availability-dot"
+          data-available={String(profile.availability.available)}
+        ></span>
+        <span class="sr-only">{tr('availability.title')}:</span>
+        {profile.availability.label}
+      </p>
+      <p class="flex flex-wrap gap-8">
+        <a class="px-btn px-btn-primary" href={cvUrl(lang)} download>
+          {tr('action.downloadCv')}
+        </a>
+        <a class="px-btn" href={`mailto:${profile.email}`}>
+          {tr('action.contactMe')}
+        </a>
+      </p>
+    </section>
+
+    <section id={id.about} aria-labelledby="about-title">
+      <h2 id="about-title">{tr('section.about')}</h2>
+      <p>{profile.bioLong}</p>
+      <h3>{tr('section.languages')}</h3>
+      <ul>
+        {profile.languages.map((l) => (
+          <li>
+            {l.name}: {l.level}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id={id.projects} aria-labelledby="projects-title">
+      <h2 id="projects-title">{tr('section.projects')}</h2>
+      <ul class="project-list" role="list">
+        {projects.map((project) => (
+          <li>
+            <article
+              class="project-card"
+              aria-labelledby={`p-${project.id}`}
+              lang={project.lang === lang ? undefined : project.lang}
+            >
+              <Picture
+                src={project.data.cover}
+                alt={project.data.coverAlt}
+                formats={['avif', 'webp']}
+                widths={[400, 800]}
+                sizes="(min-width: 48rem) 18rem, 100vw"
+                class="project-cover"
+              />
+              <div class="project-body">
+                <h3 id={`p-${project.id}`}>
+                  <a href={paths.project(lang, project.id)}>{project.data.title}</a>
+                </h3>
+                <p class="project-meta font-pixel text-ui">
+                  {project.data.year} · {project.data.role}
+                </p>
+                <p>{project.data.tagline}</p>
+                <p>{project.data.summary}</p>
+                <ul class="tags font-pixel text-ui" role="list" aria-label={tr('project.stack')}>
+                  {project.data.stack.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+                {project.data.outcomes.length > 0 && (
+                  <ul class="outcomes">
+                    {project.data.outcomes.map((o) => (
+                      <li>
+                        <strong>{o.value}</strong> {o.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id={id.skills} aria-labelledby="skills-title">
+      <h2 id="skills-title">{tr('section.skills')}</h2>
+      <div class="skills">
+        {profile.skills.map((group) => (
+          <div>
+            <h3>{group.area}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id={id.path} aria-labelledby="path-title">
+      <h2 id="path-title">{tr('section.path')}</h2>
+      {groups.map((group) => (
+        <>
+          <h3>{group.title}</h3>
+          <ol class="timeline" role="list">
+            {group.items.map((entry) => (
+              <li>
+                <h4>{entry.data.title}</h4>
+                <p class="font-pixel text-ui">
+                  {entry.data.org} · {formatPeriod(entry.data.start, entry.data.end, lang)}
+                </p>
+                <p>{entry.data.description}</p>
+              </li>
+            ))}
+          </ol>
+        </>
+      ))}
+    </section>
+
+    <section id={id.photos} aria-labelledby="photos-title">
+      <h2 id="photos-title">{tr('section.photos')}</h2>
+      {albums.map((album) => (
+        <>
+          <h3>{album.title}</h3>
+          <ul class="photo-grid" role="list">
+            {album.photos.map((photo) => (
+              <li>
+                <figure>
+                  <Picture
+                    src={photo.image}
+                    alt={photo.alt}
+                    formats={['avif', 'webp']}
+                    widths={[320, 640]}
+                    sizes="(min-width: 48rem) 14rem, 50vw"
+                  />
+                  {photo.caption && <figcaption>{photo.caption}</figcaption>}
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </section>
+
+    {testimonials.length > 0 && (
+      <section id={id.testimonials} aria-labelledby="testimonials-title">
+        <h2 id="testimonials-title">{tr('section.testimonials')}</h2>
+        {testimonials.map((item) => (
+          <figure class="quote">
+            <blockquote>
+              <p>{item.quote}</p>
+            </blockquote>
+            <figcaption>
+              {item.name}, {item.role}, {item.company}
+            </figcaption>
+          </figure>
+        ))}
+      </section>
+    )}
+
+    <section id={id.contact} aria-labelledby="contact-title">
+      <h2 id="contact-title">{tr('section.contact')}</h2>
+      <p>
+        {tr('contact.email')}: <a href={`mailto:${profile.email}`}>{profile.email}</a>
+      </p>
+      {profile.socials.length > 0 && (
+        <>
+          <h3>{tr('contact.elsewhere')}</h3>
+          <ul>
+            {profile.socials.map((s) => (
+              <li>
+                <a href={s.url} rel="me noopener noreferrer">
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p>
+        <a href={cvUrl(lang)} download>
+          {tr('action.downloadCv')}
+        </a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer font-pixel text-ui">
+    <a href={paths.home(lang)}>{tr('nav.openOs', { os: profile.osName })}</a>
+    <p>
+      © {new Date().getFullYear()} {profile.name}
+    </p>
+  </footer>
+</Base>

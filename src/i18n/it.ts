@@ -159,7 +159,7 @@ export const it = {
   'explorer.kind.file': 'Documento',
   'explorer.kind.shortcut': 'Collegamento',
   'explorer.browse': 'Mostra i file',
-  'explorer.items': '{count} elementi',
+  'explorer.items': 'Elementi: {count}',
   'explorer.empty': 'Questa cartella è vuota.',
   'explorer.notFound': 'Questa cartella non esiste più.',
 

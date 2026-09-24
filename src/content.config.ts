@@ -61,6 +61,33 @@ const projects = defineCollection({
     }),
 });
 
+/**
+ * English versions of the projects (PROMPT.md §3.11): same file name in projects/en, every field
+ * optional, the body is the English case study. Missing fields fall back to Italian.
+ */
+const projectsEn = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/projects/en' }),
+  schema: z.object({
+    title: z.string().max(60).optional(),
+    tagline: z.string().max(90).optional(),
+    summary: z.string().max(200).optional(),
+    role: z.string().optional(),
+    client: z.string().optional(),
+    duration: z.string().optional(),
+    team: z.string().optional(),
+    problem: z.string().optional(),
+    approach: z.string().optional(),
+    outcomes: z
+      .array(z.object({ value: z.string(), label: z.string(), source: z.string().optional() }))
+      .max(4)
+      .optional(),
+    coverAlt: z.string().min(5).optional(),
+    gallery: z
+      .array(z.object({ alt: z.string().min(5).optional(), caption: z.string().optional() }))
+      .optional(),
+  }),
+});
+
 const monthPattern = /^\d{4}-\d{2}$/;
 
 const experience = defineCollection({
@@ -72,7 +99,10 @@ const experience = defineCollection({
     start: z.string().regex(monthPattern),
     end: z.string().regex(monthPattern).nullable(),
     description: z.string().max(240),
+    en: z
+      .object({ title: z.string().optional(), description: z.string().max(240).optional() })
+      .optional(),
   }),
 });
 
-export const collections = { projects, experience };
+export const collections = { projects, projectsEn, experience };

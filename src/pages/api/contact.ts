@@ -25,7 +25,14 @@ const body = z.object({
 function reply(result: ContactResponse, status: number): Response {
   return new Response(JSON.stringify(result), {
     status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    // The Worker answers this route itself, so public/_headers does not apply: the essentials
+    // are set here.
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+    },
   });
 }
 

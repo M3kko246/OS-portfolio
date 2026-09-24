@@ -172,6 +172,7 @@ export const en: Messages = {
 
   'reader.error': 'The case study did not load.',
   'reader.empty': 'The case study for this project is not written yet.',
+  'reader.none': 'No case study open: choose one from the Projects folder.',
   'reader.openPage': 'Open the project page',
 
   'demo.address': 'Address',
@@ -336,6 +337,7 @@ export const en: Messages = {
   'trash.files': 'Files in the trash',
   'trash.refuse':
     'The trash would rather not: every draft in here taught something, so it stays where it is.',
+  'trash.none': 'The trash is empty: no drafts to show.',
   'trash.ok': 'All right',
   'term.welcome': '{os}, terminal. Type help for the list of commands.',
   'term.output': 'Terminal output',

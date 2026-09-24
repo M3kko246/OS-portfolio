@@ -71,8 +71,9 @@
   color: var(--term-bg);
   text-decoration: none;
 }
+/* Focus follows the system rule: sun on the dark themes, ink on paper (the prompt colour). */
 .terminal-link:focus-visible {
-  outline: var(--u) dashed var(--term-text);
+  outline: var(--u) dashed var(--term-prompt);
   outline-offset: var(--u);
 }
 

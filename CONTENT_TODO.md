@@ -52,4 +52,4 @@ Gli e2e girano su un telefono emulato. Serve una prova vera, da annotare qui con
 - [ ] Dominio: impostare `SITE_URL` sull'hosting (oggi URL canonici, sitemap e immagini social puntano a `https://example.com`)
 - [ ] Hosting: proposta Cloudflare, da confermare
 - [ ] Account Resend e chiave API: `wrangler secret put RESEND_API_KEY`, poi `CONTACT_TO` (la tua email) e, con un dominio verificato, `CONTACT_FROM`. Fino ad allora il modulo Contatti risponde "L'invio dal sito non è ancora attivo" e propone email e `mailto:`
-- [ ] Repository GitHub remoto per far girare la CI
+- [x] Repository GitHub remoto per la CI (M3kko246/Os-portfolio): i commit locali partono con `git push`

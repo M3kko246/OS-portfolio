@@ -66,6 +66,13 @@
  * 2u bevel bands and leaves 1u of light and shadow inside it.
  */
 @layer components {
+  /* Reading sizes always come with the reading face: Departure Mono only at multiples of 11 px. */
+  .text-read,
+  .text-read-lg,
+  .text-read-xl {
+    font-family: var(--ff-read);
+  }
+
   .px-shell {
     background: var(--face);
     box-shadow:

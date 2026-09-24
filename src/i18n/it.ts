@@ -171,6 +171,7 @@ export const it = {
 
   'reader.error': 'Non riesco a caricare il caso studio.',
   'reader.empty': 'Il caso studio di questo progetto non è ancora scritto.',
+  'reader.none': 'Nessun caso studio aperto: sceglilo dalla cartella Progetti.',
   'reader.openPage': 'Apri la pagina del progetto',
 
   'demo.address': 'Indirizzo',
@@ -335,6 +336,7 @@ export const it = {
   'trash.files': 'File nel cestino',
   'trash.refuse':
     'Il cestino preferisce di no: ogni bozza qui dentro ha insegnato qualcosa, quindi resta dove si trova.',
+  'trash.none': 'Il cestino è vuoto: nessuna bozza da mostrare.',
   'trash.ok': 'Va bene',
   'term.welcome': "{os}, terminale. Scrivi help per l'elenco dei comandi.",
   'term.output': 'Uscita del terminale',
@@ -418,7 +420,7 @@ export const it = {
   'handheld.back': 'Indietro',
   'settings.mode': 'Modalità',
   'settings.mode.auto': 'Auto',
-  'settings.mode.desktop': 'Scrivania',
+  'settings.mode.desktop': 'Desktop',
   'settings.mode.handheld': 'Palmare',
 
   'meta.classicDescription':

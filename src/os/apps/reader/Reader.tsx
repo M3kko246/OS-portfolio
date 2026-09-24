@@ -14,7 +14,12 @@ interface CaseStudy {
 
 export default function Reader({ params }: AppProps) {
   const t = useT();
-  const slug = params.slug ?? '';
+  if (!params.slug) return <EmptyState message={t('reader.none')} />;
+  return <CaseStudyView slug={params.slug} />;
+}
+
+function CaseStudyView({ slug }: { slug: string }) {
+  const t = useT();
   const { lang } = useOsIndex();
   const resource = useResource<CaseStudy>(paths.projectData(lang, slug));
   const page = paths.project(lang, slug);

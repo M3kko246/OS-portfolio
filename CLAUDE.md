@@ -159,3 +159,11 @@ file records conventions, commands and decisions so every session starts aligned
   language on load; switching it in the system moves the address between `/` and `/en` and
   updates `<html lang>`. VFS names follow the language (`vfsNames`); Explorer and Terminal
   fall back to a valid folder after a switch.
+- Deep links for per-project apps carry the project: `?app=reader&progetto=<slug>`,
+  `?app=demo&progetto=<slug>`; without it they are not opened (no empty windows, no 404 fetch).
+- `.text-read*` classes set the reading face too: reading sizes never render in Departure Mono.
+- `session: false` in astro.config: the adapter would otherwise bind a SESSION KV namespace.
+  `pnpm site:check` / `pnpm site:deploy` wrap `wrangler deploy` (the adapter writes the deploy
+  config into dist/server); CI runs the dry-run. Deploying needs the owner's account.
+- Final check of PROMPT.md §6 with evidence: `CONTROLLO_FINALE.md`; `e2e/sweep.spec.ts` covers
+  every app in both themes, served security headers and pixel font sizes at five scales.

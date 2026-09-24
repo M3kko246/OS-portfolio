@@ -11,16 +11,26 @@ describe('deep links', () => {
     ['?progetto=alfa', { appId: 'project', params: { slug: 'alfa' } }],
     ['?app=career&isola=beta', { appId: 'career', params: { island: 'beta' } }],
     ['?app=career&isola=nessuna', { appId: 'career', params: {} }],
+    ['?app=reader&progetto=alfa', { appId: 'reader', params: { slug: 'alfa' } }],
+    ['?app=demo&progetto=beta', { appId: 'demo', params: { slug: 'beta' } }],
   ])('parses %s', (search, intent) => {
     expect(parseSearch(search, slugs)).toEqual(intent);
   });
 
-  it.each(['', '?app=nope', '?progetto=nope', '?app=project'])('ignores %s', (search) => {
-    expect(parseSearch(search, slugs)).toBeNull();
-  });
+  it.each(['', '?app=nope', '?progetto=nope', '?app=project', '?app=reader', '?app=demo'])(
+    'ignores %s',
+    (search) => {
+      expect(parseSearch(search, slugs)).toBeNull();
+    },
+  );
 
   it('round-trips every intent it produces', () => {
-    for (const search of ['?app=about', '?progetto=alfa', '?app=career&isola=beta']) {
+    for (const search of [
+      '?app=about',
+      '?progetto=alfa',
+      '?app=career&isola=beta',
+      '?app=reader&progetto=alfa',
+    ]) {
       expect(searchFor(parseSearch(search, slugs))).toBe(search);
     }
     expect(searchFor(null)).toBe('');

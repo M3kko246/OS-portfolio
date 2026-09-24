@@ -7,6 +7,7 @@ import { unlockAchievement } from '@/os/kernel/achievements';
 import { useT } from '@/os/lib/i18n';
 import { useModal } from '@/os/shell/Dialogs';
 import { cx, Glyph, Sprite } from '@/os/ui/primitives';
+import { EmptyState } from '@/os/ui/States';
 
 /** Discarded drafts, and a Cestino that politely refuses to be emptied. */
 export default function Trash() {
@@ -38,7 +39,8 @@ export default function Trash() {
         </button>
         <p className="trash-count">{t('trash.count', { n: trash.length })}</p>
       </div>
-      <div className="trash-body">
+      {trash.length === 0 && <EmptyState message={t('trash.none')} />}
+      <div className="trash-body" hidden={trash.length === 0}>
         <ul className="trash-list" aria-label={t('trash.files')}>
           {trash.map((file) => (
             <li key={file.name}>

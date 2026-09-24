@@ -36,11 +36,17 @@
   background: none;
   color: inherit;
 }
+/* Focus: sun on the dark bars; on the wallpaper, dashed paper over an ink line like the desktop. */
 .hh-status-button:focus-visible,
 .hh-back:focus-visible,
-.hh-icon:focus-visible {
+.hh-dock .hh-icon:focus-visible {
+  outline: var(--u) dashed var(--c-sun);
+  outline-offset: calc(var(--u) * -2);
+}
+.hh-grid .hh-icon:focus-visible {
   outline: var(--u) dashed var(--c-paper);
   outline-offset: calc(var(--u) * -2);
+  box-shadow: inset 0 0 0 calc(var(--u) * 3) var(--c-ink);
 }
 
 .hh-home,

@@ -1,6 +1,6 @@
 import '../apps.css';
 import { Download } from 'pixelarticons/react/Download';
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useOsIndex } from '@/os/context';
 import { useT } from '@/os/lib/i18n';
 import { Skeleton } from '@/os/ui/Skeleton';
@@ -25,6 +25,17 @@ export default function Cv() {
     () => window.matchMedia(PHONE).matches,
     () => false,
   );
+
+  // Some browsers never fire load for a PDF frame (no viewer, or a download instead): the
+  // skeleton gives way after a few seconds anyway, and the download button stays.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setLoaded(true);
+    }, 3000);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   const download = (
     <a className="px-btn px-btn-primary" href={profile.cv.it} download>

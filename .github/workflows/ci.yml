@@ -32,10 +32,15 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm budgets
+      # The Worker bundle compiles and fits (no upload, no credentials needed).
+      - run: pnpm exec wrangler deploy --dry-run
+        env:
+          WRANGLER_SEND_METRICS: 'false'
       - run: pnpm test:e2e
       - run: pnpm lighthouse
+      # Lighthouse and Playwright reports stay available for every run, not only failures.
       - uses: actions/upload-artifact@v7
-        if: failure()
+        if: always()
         with:
           name: reports
           path: |

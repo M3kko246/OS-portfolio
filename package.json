@@ -24,6 +24,8 @@
     "fonts": "tsx scripts/subset-fonts.ts",
     "sprites": "tsx scripts/build-sprites.ts",
     "wallpapers": "tsx scripts/render-wallpapers.ts",
+    "site:check": "pnpm build && wrangler deploy --dry-run",
+    "site:deploy": "pnpm build && wrangler deploy",
     "verify": "pnpm check && pnpm lint && pnpm format:check && pnpm test && pnpm build"
   },
   "dependencies": {

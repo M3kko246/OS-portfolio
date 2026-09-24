@@ -7,18 +7,24 @@ export interface Intent {
   params: AppParams;
 }
 
+/** Apps that show one project: their links carry it, or they are not opened at all. */
+const PER_PROJECT = new Set<AppId>(['project', 'reader', 'demo']);
+
 /**
- * Deep links: `?app=<id>`, `?progetto=<slug>`, `?app=career&isola=<slug>`.
+ * Deep links: `?app=<id>`, `?progetto=<slug>` (the project card),
+ * `?app=reader&progetto=<slug>` and `?app=demo&progetto=<slug>`, `?app=career&isola=<slug>`.
  * Unknown apps and projects are ignored rather than opening an empty window.
  */
 export function parseSearch(search: string, projectSlugs: ReadonlySet<string>): Intent | null {
   const query = new URLSearchParams(search);
+  const app = query.get('app');
   const project = query.get('progetto');
   if (project !== null) {
-    return projectSlugs.has(project) ? { appId: 'project', params: { slug: project } } : null;
+    if (!projectSlugs.has(project)) return null;
+    const appId: AppId = app === 'reader' || app === 'demo' ? app : 'project';
+    return { appId, params: { slug: project } };
   }
-  const app = query.get('app');
-  if (app === null || !isAppId(app) || app === 'project') return null;
+  if (app === null || !isAppId(app) || PER_PROJECT.has(app)) return null;
   const island = query.get('isola');
   if (app === 'career' && island !== null && projectSlugs.has(island)) {
     return { appId: 'career', params: { island } };
@@ -34,6 +40,9 @@ export function searchFor(intent: Intent | null): string {
   }
   const query = new URLSearchParams({ app: intent.appId });
   if (intent.appId === 'career' && intent.params.island) query.set('isola', intent.params.island);
+  if ((intent.appId === 'reader' || intent.appId === 'demo') && intent.params.slug) {
+    query.set('progetto', intent.params.slug);
+  }
   return `?${query.toString()}`;
 }
 

@@ -90,6 +90,8 @@ export default defineConfig({
   // `/classica.html` is served at `/classica` without a redirect, matching the canonical URLs.
   build: { format: 'file' },
   trailingSlash: 'never',
+  // No server sessions: /api/contact is stateless, so there is no KV namespace to provision.
+  session: false,
   adapter: cloudflare({
     // Build-time pages use Node APIs (fs, sharp, Satori); only /api/contact runs on workerd.
     prerenderEnvironment: 'node',
